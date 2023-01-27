@@ -14,7 +14,8 @@ UNIT = 3
 GRID_NUM = 20  # number of grid squares
 GRID_WIDTH, GRID_HEIGHT = 200 * UNIT, 200 * UNIT
 WIN_WIDTH, WIN_HEIGHT = GRID_WIDTH, GRID_HEIGHT
-ROBOT_WIDTH, ROBOT_HEIGHT = 20, 21
+ROBOT_WIDTH, ROBOT_HEIGHT = 30 * UNIT, 30 * UNIT
+OBSTACLE_WIDTH, OBSTACLE_HEIGHT = 40 * UNIT, 40 * UNIT
 VEL = 10
 
 
@@ -26,6 +27,9 @@ pathfinding_start = False
 # Images
 ROBOT_IMAGE = pygame.image.load(os.path.join('Assets', 'Robot.png'))
 ROBOT = pygame.transform.scale(ROBOT_IMAGE, (ROBOT_WIDTH, ROBOT_HEIGHT))
+OBSTACLE_IMAGE = pygame.image.load(os.path.join('Assets', 'Obstacle.png'))
+OBSTACLE = pygame.transform.scale(
+    OBSTACLE_IMAGE, (OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
 
 # Window
 WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))  # Game window
@@ -39,8 +43,8 @@ def color_obstacle_face(mouse_pos, grid_x, grid_y):
     # calculate the coordinates of each face of the obstacle
     if x < 3:
         clicked_face = "left"
-        pygame.draw.line(WIN, COLOR_OBSTACLE_IMG, (0, GRID_HEIGHT - (grid_x*(GRID_HEIGHT//GRID_NUM))),
-                         (GRID_WIDTH, GRID_HEIGHT - (grid_y*(GRID_HEIGHT//GRID_NUM))))
+        # pygame.draw.line(WIN, COLOR_OBSTACLE_IMG, (0, GRID_HEIGHT - (grid_x*(GRID_HEIGHT//GRID_NUM))),
+        # (GRID_WIDTH, GRID_HEIGHT - (grid_y*(GRID_HEIGHT//GRID_NUM))))
     elif x > 7:
         clicked_face = "right"
     elif y < 3:
@@ -68,8 +72,11 @@ def draw_obstacles():
     for i in range(GRID_NUM):
         for j in range(GRID_NUM):
             if grid[i][j] == 1:
-                pygame.draw.rect(WIN, BLACK, (i * (GRID_WIDTH // GRID_NUM), j * (
-                    GRID_HEIGHT // GRID_NUM), GRID_WIDTH // GRID_NUM, GRID_HEIGHT // GRID_NUM))
+                # pygame.draw.rect(WIN, BLACK, (i * (GRID_WIDTH // GRID_NUM), j * (
+                #     GRID_HEIGHT // GRID_NUM), GRID_WIDTH // GRID_NUM, GRID_HEIGHT // GRID_NUM))
+                WIN.blit(OBSTACLE,
+                         (i * (GRID_WIDTH // GRID_NUM) - 15 * UNIT,
+                          j * (GRID_HEIGHT // GRID_NUM) - 15 * UNIT))
 
 
 def draw_start_box():
@@ -119,7 +126,7 @@ def main():
             # Start pathfinding
 
         draw_window()
-        WIN.blit(ROBOT_IMAGE, (robot.x, robot.y))
+        WIN.blit(ROBOT, (robot.x, robot.y))
         pygame.display.update()
     pygame.quit()
 
