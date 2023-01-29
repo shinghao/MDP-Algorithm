@@ -53,12 +53,12 @@ def draw_grid():
     '''
     # Vertical line
     for i in range(Constants.GRID_NUM):
-        pygame.draw.line(WIN, Constants.BLACK, (i*(Constants.GRID_WIDTH//Constants.GRID_NUM),
-                                                0), (i*(Constants.GRID_WIDTH//Constants.GRID_NUM), Constants.GRID_HEIGHT))
+        pygame.draw.line(WIN, Constants.BLACK, (i * Constants.GRID_CELL_SIZE,
+                                                0), (i * Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT))
     # Horizontal line
     for i in range(Constants.GRID_NUM):
-        pygame.draw.line(WIN, Constants.BLACK, (0, Constants.GRID_HEIGHT - (i*(Constants.GRID_HEIGHT//Constants.GRID_NUM))),
-                         (Constants.GRID_WIDTH, Constants.GRID_HEIGHT - (i*(Constants.GRID_HEIGHT//Constants.GRID_NUM))))
+        pygame.draw.line(WIN, Constants.BLACK, (0, Constants.GRID_HEIGHT - (i * Constants.GRID_CELL_SIZE)),
+                         (Constants.GRID_WIDTH, Constants.GRID_HEIGHT - (i * Constants.GRID_CELL_SIZE)))
 
 
 def draw_obstacles():
@@ -72,8 +72,8 @@ def draw_obstacles():
                 # pygame.draw.rect(WIN, Constants.BLACK, (i * (Constants.GRID_WIDTH // Constants.GRID_NUM), j * (
                 #     Constants.GRID_HEIGHT // Constants.GRID_NUM), Constants.GRID_WIDTH // Constants.GRID_NUM, Constants.GRID_HEIGHT // Constants.GRID_NUM))
                 WIN.blit(OBSTACLE,
-                         (i * (Constants.GRID_WIDTH // Constants.GRID_NUM) - 15 * Constants.UNIT,
-                          j * (Constants.GRID_HEIGHT // Constants.GRID_NUM) - 15 * Constants.UNIT))
+                         (i * Constants.GRID_CELL_SIZE - 15 * Constants.UNIT,
+                          j * Constants.GRID_CELL_SIZE - 15 * Constants.UNIT))
 
 
 def draw_start_box():
@@ -81,7 +81,8 @@ def draw_start_box():
     This function uses Pygame to draw the rectangle of the starting area
     '''
     pygame.draw.rect(WIN, Constants.COLOR_START,
-                     pygame.Rect(0, Constants.GRID_HEIGHT - (40 * Constants.UNIT), 40 * Constants.UNIT, 40*Constants.UNIT))
+                     pygame.Rect(Constants.START_X, Constants.GRID_HEIGHT - (Constants.START_Y * Constants.UNIT),
+                                 Constants.START_WIDTH * Constants.UNIT, Constants.START_HEIGHT * Constants.UNIT))
 
 
 def draw_window():
@@ -100,8 +101,8 @@ def draw_robot(robot):
 
 def handle_obstacle_placement():
     pos = pygame.mouse.get_pos()
-    x, y = pos[0] // (Constants.GRID_WIDTH //
-                      Constants.GRID_NUM), pos[1] // (Constants.GRID_HEIGHT // Constants.GRID_NUM)
+    x = pos[0] // Constants.GRID_CELL_SIZE
+    y = pos[1] // Constants.GRID_CELL_SIZE
     if grid[x][y] == 0:
         grid[x][y] = 1
         color_obstacle_face(pos, x, y)
