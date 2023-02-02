@@ -88,7 +88,8 @@ def __draw_robot(robot, robot_orientation):
     '''
     This function uses WIN.blit method to render the robot image based on it's position
     '''
-    WIN.blit(ROBOT_IMG, (robot.x, robot.y))
+    WIN.blit(pygame.transform.rotate(
+        ROBOT_IMG, -1 * robot_orientation * 45), (robot.x, robot.y))
 
 
 def draw_environment(obstacle_list, robot, robot_orientation):
