@@ -84,16 +84,16 @@ def __draw_obstacles(obstacle_list):
             WIN.blit(OBSTACLE_IMG_W, obstacle_grid_destination)
 
 
-def __draw_robot(robot):
+def __draw_robot(robot, robot_orientation):
     '''
     This function uses WIN.blit method to render the robot image based on it's position
     '''
     WIN.blit(ROBOT_IMG, (robot.x, robot.y))
 
 
-def draw_environment(obstacle_list, robot):
+def draw_environment(obstacle_list, robot, robot_orientation):
     __draw_window()
     __draw_start_box()
     __draw_grid()
     __draw_obstacles(obstacle_list)
-    __draw_robot(robot)
+    __draw_robot(robot, robot_orientation)
