@@ -1,3 +1,5 @@
+from enum import Enum
+
 # Colors
 COLOR_START = (138, 183, 255)
 BLACK = (0, 0, 0)
@@ -22,3 +24,12 @@ OBSTACLE_WIDTH, OBSTACLE_HEIGHT = 40 * UNIT, 40 * UNIT  # Dimensions of obstacle
 
 START_X, START_Y = 0, 40
 START_WIDTH, START_HEIGHT = 40, 40
+
+# Direction Enum
+
+
+class Direction(Enum):
+    NORTH = 0
+    SOUTH = 180
+    EAST = -90
+    WEST = 90
