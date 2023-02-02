@@ -84,13 +84,15 @@ def main():
                 if can_control_robot:
                     # handle_robot_control(event, robot, robot_orientation)
                     if event.key == pygame.K_w:
-                        robot.y -= Constants.VEL
+                        robot.x += Constants.VEL * math.sin(robot_orientation)
+                        robot.y -= Constants.VEL * math.cos(robot_orientation)
                     elif event.key == pygame.K_s:
-                        robot.y += Constants.VEL
-                    elif event.key == pygame.K_a:
                         robot.x -= Constants.VEL * math.sin(robot_orientation)
                         robot.y += Constants.VEL * math.cos(robot_orientation)
-                        robot_orientation += (Constants.VEL / RADIUS)
+                    elif event.key == pygame.K_a:
+                        robot.x += Constants.VEL * math.sin(robot_orientation)
+                        robot.y -= Constants.VEL * math.cos(robot_orientation)
+                        robot_orientation -= (Constants.VEL / RADIUS)
                     if event.key == pygame.K_d:
                         robot.x += Constants.VEL * math.sin(robot_orientation)
                         robot.y -= Constants.VEL * math.cos(robot_orientation)
