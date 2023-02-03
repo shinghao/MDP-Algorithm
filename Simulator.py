@@ -14,11 +14,6 @@ pathfinding_start = False
 # Initialise obstacle list
 obstacle_list = []
 
-# Initalise Robot
-robot_pos = (0, Constants.GRID_HEIGHT - (40 * Constants.UNIT))
-robot = pygame.Rect(robot_pos[0], robot_pos[1],
-                    Constants.ROBOT_WIDTH, Constants.ROBOT_HEIGHT)
-
 
 def to_pygame_y_coord(y_coordinate):
     '''
