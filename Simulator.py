@@ -4,7 +4,6 @@ import Constants
 import Obstacle
 import Environment
 import Robot
-import RobotRenderer
 
 # Initialise grid 2d array
 grid = [[0 for _ in range(Constants.GRID_NUM)]
@@ -13,6 +12,9 @@ pathfinding_start = False
 
 # Initialise obstacle list
 obstacle_list = []
+
+# Window name
+pygame.display.set_caption("MDP Algorithm Simulator")
 
 
 def to_pygame_y_coord(y_coordinate):
@@ -76,25 +78,34 @@ def print_obstacles():
 
 
 def main():
-    # initalise robot object and renderer
-    robot = Robot.Robot(Environment.WIN)
+    # Initalise robot object
+    robot = Robot.Robot(Constants.WIN)
+
+    # Initalise Environment object
+    environment = Environment.Environment()
+
     simulator_run = True
     can_place_obstacle = True
     can_control_robot = True
     clock = pygame.time.Clock()
+
     while simulator_run:
         clock.tick(Constants.FPS)
+
         # Handle player inputs
         for event in pygame.event.get():
+            # Quit
             if event.type == pygame.QUIT:
                 simulator_run = False
+            # Mouse Input
             elif event.type == pygame.MOUSEBUTTONDOWN and can_place_obstacle:
                 handle_obstacle_placement()
+            # Keyboard Input
             elif event.type == pygame.KEYUP:
-                # Control robot manually
+                # WASD -> Control robot manually
                 if can_control_robot:
                     handle_robot_control(event, robot)
-                # Start pathfinding - Disable obstacle placement and robot manual movement
+                # 'SPACE' -> Start pathfinding - Disable obstacle placement and robot manual movement
                 if event.key == pygame.K_SPACE:
                     print_obstacles()
                     can_place_obstacle = False
@@ -102,7 +113,7 @@ def main():
                     print("Start pathfinding!")
 
         # Draw pygame environment onto screen - grid, obstacles, robot etc
-        Environment.draw_environment(obstacle_list)
+        environment.render_environment(obstacle_list)
         robot.render_robot()
         pygame.display.update()
     pygame.quit()

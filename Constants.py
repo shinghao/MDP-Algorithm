@@ -1,4 +1,5 @@
 from enum import Enum
+import pygame
 
 # Colors
 COLOR_START = (138, 183, 255)
@@ -30,6 +31,10 @@ OBSTACLE_WIDTH, OBSTACLE_HEIGHT = 40 * UNIT, 40 * UNIT
 # Starting box
 START_X, START_Y = 0, 40
 START_WIDTH, START_HEIGHT = 40 * UNIT, 40 * UNIT
+
+# Pygame Window
+WIN = pygame.display.set_mode(
+    (WIN_WIDTH, WIN_HEIGHT))  # Game window
 
 
 class Direction(Enum):

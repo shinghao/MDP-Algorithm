@@ -3,10 +3,11 @@ import pygame
 import os
 import Constants
 
+ROBOT_IMG_FILE = pygame.image.load(os.path.join('Assets', 'Robot.png'))
+
 '''
 The Robot class handles the movement and rendering of the robot
 '''
-ROBOT_IMG_FILE = pygame.image.load(os.path.join('Assets', 'Robot.png'))
 
 
 class Robot:
