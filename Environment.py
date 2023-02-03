@@ -1,14 +1,14 @@
 import os
 import Constants
 import pygame
+import math
+import Simulator
 
 # activate the pygame library
 pygame.init()
 
 # Pygame Images
-ROBOT_IMG_FILE = pygame.image.load(os.path.join('Assets', 'Robot.png'))
-ROBOT_IMG = pygame.transform.scale(
-    ROBOT_IMG_FILE, (Constants.ROBOT_WIDTH, Constants.ROBOT_HEIGHT))
+
 OBSTACLE_IMG_FILE = pygame.image.load(
     os.path.join('Assets', 'Obstacle.png'))
 OBSTACLE_IMG_N = pygame.transform.scale(
@@ -24,9 +24,9 @@ pygame.display.set_caption("MDP Algorithm Simulator")  # Window name
 
 # Pygame Start Rectangle
 startRect = pygame.Rect(Constants.START_X, Constants.GRID_HEIGHT - (Constants.START_Y * Constants.UNIT),
-                        Constants.START_WIDTH * Constants.UNIT, Constants.START_HEIGHT * Constants.UNIT)
+                        Constants.START_WIDTH, Constants.START_HEIGHT)
 startTextRect = pygame.Rect(Constants.START_X + 6, Constants.GRID_HEIGHT - (28 * Constants.UNIT),
-                            Constants.START_WIDTH * Constants.UNIT, Constants.START_HEIGHT * Constants.UNIT)
+                            Constants.START_WIDTH, Constants.START_HEIGHT)
 
 # Pygame Texts
 font = pygame.font.Font('freesansbold.ttf', 46)
@@ -84,17 +84,8 @@ def __draw_obstacles(obstacle_list):
             WIN.blit(OBSTACLE_IMG_W, obstacle_grid_destination)
 
 
-def __draw_robot(robot, robot_orientation):
-    '''
-    This function uses WIN.blit method to render the robot image based on it's position
-    '''
-    WIN.blit(pygame.transform.rotate(
-        ROBOT_IMG, -1 * robot_orientation * 45), (robot.x, robot.y))
-
-
-def draw_environment(obstacle_list, robot, robot_orientation):
+def draw_environment(obstacle_list):
     __draw_window()
     __draw_start_box()
     __draw_grid()
     __draw_obstacles(obstacle_list)
-    __draw_robot(robot, robot_orientation)
