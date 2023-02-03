@@ -21,6 +21,15 @@ robot = pygame.Rect(robot_pos[0], robot_pos[1],
 RADIUS = 30 * Constants.UNIT
 
 
+def to_pygame_y_coord(y_coordinate):
+    '''
+    Convert y-coordinates into pygame y-coordinates.
+    This is required as pygame takes the top left of the window as the origin (0,0)
+    while we are using the bottom left of the window as the origin
+    '''
+    return Constants.WIN_HEIGHT - y_coordinate
+
+
 def get_obstacle_direction(mouse_pos):
     x = mouse_pos[0] / Constants.UNIT % 10
     y = mouse_pos[1] / Constants.UNIT % 10
@@ -84,11 +93,15 @@ def main():
                 if can_control_robot:
                     # handle_robot_control(event, robot, robot_orientation)
                     if event.key == pygame.K_w:
-                        robot.x += Constants.VEL * math.sin(robot_orientation)
-                        robot.y -= Constants.VEL * math.cos(robot_orientation)
+                        robot.x += Constants.VEL * \
+                            math.sin(robot_orientation)
+                        robot.y -= Constants.VEL * \
+                            math.cos(robot_orientation)
                     elif event.key == pygame.K_s:
-                        robot.x -= Constants.VEL * math.sin(robot_orientation)
-                        robot.y += Constants.VEL * math.cos(robot_orientation)
+                        robot.x += Constants.VEL * \
+                            math.sin(robot_orientation)
+                        robot.y += Constants.VEL * \
+                            math.cos(robot_orientation)
                     elif event.key == pygame.K_a:
                         robot.x += Constants.VEL * math.sin(robot_orientation)
                         robot.y -= Constants.VEL * math.cos(robot_orientation)
@@ -97,6 +110,8 @@ def main():
                         robot.x += Constants.VEL * math.sin(robot_orientation)
                         robot.y -= Constants.VEL * math.cos(robot_orientation)
                         robot_orientation += (Constants.VEL / RADIUS)
+                    print(robot_orientation)
+
                 # Start pathfinding - Disable obstacle placement and robot manual movement
                 if event.key == pygame.K_SPACE:
                     print_obstacles()
@@ -106,6 +121,7 @@ def main():
 
         # Draw pygame environment onto screen - grid, obstacles, robot etc
         Environment.draw_environment(obstacle_list, robot, robot_orientation)
+
         pygame.display.update()
     pygame.quit()
 
