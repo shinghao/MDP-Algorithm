@@ -3,6 +3,8 @@ import math
 import Constants
 import Obstacle
 import Environment
+import Robot
+import RobotRenderer
 
 # Initialise grid 2d array
 grid = [[0 for _ in range(Constants.GRID_NUM)]
@@ -16,9 +18,6 @@ obstacle_list = []
 robot_pos = (0, Constants.GRID_HEIGHT - (40 * Constants.UNIT))
 robot = pygame.Rect(robot_pos[0], robot_pos[1],
                     Constants.ROBOT_WIDTH, Constants.ROBOT_HEIGHT)
-
-# RADIUS
-RADIUS = 30 * Constants.UNIT
 
 
 def to_pygame_y_coord(y_coordinate):
@@ -64,8 +63,15 @@ def handle_obstacle_placement():
         change_obstacle_direction(obstacle_dir, x, y)
 
 
-def handle_robot_control(event, robot, robot_orien):
-    print("hi")
+def handle_robot_control(event, robot):
+    if event.key == pygame.K_w:
+        robot.move_forward()
+    elif event.key == pygame.K_s:
+        robot.move_backward()
+    elif event.key == pygame.K_a:
+        robot.move_left_forward()
+    if event.key == pygame.K_d:
+        robot.move_right_forward()
 
 
 def print_obstacles():
@@ -75,7 +81,8 @@ def print_obstacles():
 
 
 def main():
-    robot_orientation = 0
+    # initalise robot object and renderer
+    robot = Robot.Robot(Environment.WIN)
     simulator_run = True
     can_place_obstacle = True
     can_control_robot = True
@@ -91,27 +98,7 @@ def main():
             elif event.type == pygame.KEYUP:
                 # Control robot manually
                 if can_control_robot:
-                    # handle_robot_control(event, robot, robot_orientation)
-                    if event.key == pygame.K_w:
-                        robot.x += Constants.VEL * \
-                            math.sin(robot_orientation)
-                        robot.y -= Constants.VEL * \
-                            math.cos(robot_orientation)
-                    elif event.key == pygame.K_s:
-                        robot.x += Constants.VEL * \
-                            math.sin(robot_orientation)
-                        robot.y += Constants.VEL * \
-                            math.cos(robot_orientation)
-                    elif event.key == pygame.K_a:
-                        robot.x += Constants.VEL * math.sin(robot_orientation)
-                        robot.y -= Constants.VEL * math.cos(robot_orientation)
-                        robot_orientation -= (Constants.VEL / RADIUS)
-                    if event.key == pygame.K_d:
-                        robot.x += Constants.VEL * math.sin(robot_orientation)
-                        robot.y -= Constants.VEL * math.cos(robot_orientation)
-                        robot_orientation += (Constants.VEL / RADIUS)
-                    print(robot_orientation)
-
+                    handle_robot_control(event, robot)
                 # Start pathfinding - Disable obstacle placement and robot manual movement
                 if event.key == pygame.K_SPACE:
                     print_obstacles()
@@ -120,8 +107,8 @@ def main():
                     print("Start pathfinding!")
 
         # Draw pygame environment onto screen - grid, obstacles, robot etc
-        Environment.draw_environment(obstacle_list, robot, robot_orientation)
-
+        Environment.draw_environment(obstacle_list)
+        robot.render_robot()
         pygame.display.update()
     pygame.quit()
 
