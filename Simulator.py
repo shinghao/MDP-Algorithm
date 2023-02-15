@@ -1,132 +1,120 @@
 import pygame
-import os
+import math
+import Constants
+import Obstacle
+import Environment
+import Robot
 
-# colors
-COLOR_START = (138, 183, 255)
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-COLOR_OBSTACLE_IMG = (255, 0, 0)
-COLOR_OBSTACLE_COLLIDER = (200, 0, 0)
-
-# constants
-FPS = 120
-UNIT = 3
-GRID_NUM = 20  # number of grid squares
-GRID_WIDTH, GRID_HEIGHT = 200 * UNIT, 200 * UNIT
-WIN_WIDTH, WIN_HEIGHT = GRID_WIDTH, GRID_HEIGHT
-ROBOT_WIDTH, ROBOT_HEIGHT = 30 * UNIT, 30 * UNIT
-OBSTACLE_WIDTH, OBSTACLE_HEIGHT = 40 * UNIT, 40 * UNIT
-VEL = 10
-
-
-# navigational area of GRID_WIDTH * GRID_HEIGHT
-# nav_area = [[0 for _ in range(GRID_WIDTH) for _ in range(GRID_NUM)]]
-grid = [[0 for _ in range(GRID_NUM)] for _ in range(GRID_NUM)]
+# Initialise grid 2d array
+grid = [[0 for _ in range(Constants.GRID_NUM)]
+        for _ in range(Constants.GRID_NUM)]
 pathfinding_start = False
 
-# Images
-ROBOT_IMAGE = pygame.image.load(os.path.join('Assets', 'Robot.png'))
-ROBOT = pygame.transform.scale(ROBOT_IMAGE, (ROBOT_WIDTH, ROBOT_HEIGHT))
-OBSTACLE_IMAGE = pygame.image.load(os.path.join('Assets', 'Obstacle.png'))
-OBSTACLE = pygame.transform.scale(
-    OBSTACLE_IMAGE, (OBSTACLE_WIDTH, OBSTACLE_HEIGHT))
+# Initialise obstacle list
+obstacle_list = []
 
-# Window
-WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))  # Game window
-pygame.display.set_caption("MDP Algorithm Simulator")  # Window name
+# Window name
+pygame.display.set_caption("MDP Algorithm Simulator")
 
 
-def color_obstacle_face(mouse_pos, grid_x, grid_y):
-    x = mouse_pos[0] / UNIT % 10
-    y = mouse_pos[1] / UNIT % 10
+def to_pygame_y_coord(y_coordinate):
+    '''
+    Convert y-coordinates into pygame y-coordinates.
+    This is required as pygame takes the top left of the window as the origin (0,0)
+    while we are using the bottom left of the window as the origin
+    '''
+    return Constants.WIN_HEIGHT - y_coordinate
+
+
+def get_obstacle_direction(mouse_pos):
+    x = mouse_pos[0] / Constants.UNIT % 10
+    y = mouse_pos[1] / Constants.UNIT % 10
 
     # calculate the coordinates of each face of the obstacle
     if x < 3:
-        clicked_face = "left"
-        # pygame.draw.line(WIN, COLOR_OBSTACLE_IMG, (0, GRID_HEIGHT - (grid_x*(GRID_HEIGHT//GRID_NUM))),
-        # (GRID_WIDTH, GRID_HEIGHT - (grid_y*(GRID_HEIGHT//GRID_NUM))))
+        return Constants.Direction.EAST
     elif x > 7:
-        clicked_face = "right"
-    elif y < 3:
-        clicked_face = "top"
+        return Constants.Direction.WEST
     elif y > 7:
-        clicked_face = "bottom"
+        return Constants.Direction.SOUTH
     else:
-        clicked_face = "front"
-
-    print(clicked_face)
+        return Constants.Direction.NORTH
 
 
-def draw_grid():
-    # Draw grid lines
-    for i in range(GRID_NUM):
-        pygame.draw.line(WIN, BLACK, (i*(GRID_WIDTH//GRID_NUM),
-                                      0), (i*(GRID_WIDTH//GRID_NUM), GRID_HEIGHT))
-    for i in range(GRID_NUM):
-        pygame.draw.line(WIN, BLACK, (0, GRID_HEIGHT - (i*(GRID_HEIGHT//GRID_NUM))),
-                         (GRID_WIDTH, GRID_HEIGHT - (i*(GRID_HEIGHT//GRID_NUM))))
+def change_obstacle_direction(new_obstacle_dir, x, y):
+    for obs in obstacle_list:
+        if obs.get_coordinates() == (x, y):
+            obs.set_direction(new_obstacle_dir)
+            break
 
 
-def draw_obstacles():
-    # Draw obstacles
-    for i in range(GRID_NUM):
-        for j in range(GRID_NUM):
-            if grid[i][j] == 1:
-                # pygame.draw.rect(WIN, BLACK, (i * (GRID_WIDTH // GRID_NUM), j * (
-                #     GRID_HEIGHT // GRID_NUM), GRID_WIDTH // GRID_NUM, GRID_HEIGHT // GRID_NUM))
-                WIN.blit(OBSTACLE,
-                         (i * (GRID_WIDTH // GRID_NUM) - 15 * UNIT,
-                          j * (GRID_HEIGHT // GRID_NUM) - 15 * UNIT))
+def handle_obstacle_placement():
+    pos = pygame.mouse.get_pos()
+    x = pos[0] // Constants.GRID_CELL_SIZE
+    y = pos[1] // Constants.GRID_CELL_SIZE
+    obstacle_dir = get_obstacle_direction(pos)
+    if grid[x][y] == 0:
+        grid[x][y] = 1
+        obstacle_list.append(Obstacle.Obstacle(x, y, obstacle_dir))
+    if grid[x][y] == 1:
+        change_obstacle_direction(obstacle_dir, x, y)
 
 
-def draw_start_box():
-    # Draw start area
-    pygame.draw.rect(WIN, COLOR_START,
-                     pygame.Rect(0, GRID_HEIGHT - (40 * UNIT), 40 * UNIT, 40*UNIT))
+def handle_robot_control(event, robot):
+    if event.key == pygame.K_w:
+        robot.move_forward()
+    elif event.key == pygame.K_s:
+        robot.move_backward()
+    elif event.key == pygame.K_a:
+        robot.move_left_forward()
+    if event.key == pygame.K_d:
+        robot.move_right_forward()
 
 
-def draw_window():
-    WIN.fill(WHITE)
-    draw_start_box()
-    draw_obstacles()
-    draw_grid()
+def print_obstacles():
+    for obs in obstacle_list:
+        print(obs.get_coordinates(),
+              obs.get_direction().name)
 
 
 def main():
-    robot = pygame.Rect(0, GRID_HEIGHT - (40 * UNIT),
-                        ROBOT_WIDTH, ROBOT_HEIGHT)
-    run = True
-    pathfinding_start = False
+    # Initalise robot object
+    robot = Robot.Robot(Constants.WIN)
+
+    # Initalise Environment object
+    environment = Environment.Environment()
+
+    simulator_run = True
+    can_place_obstacle = True
+    can_control_robot = True
     clock = pygame.time.Clock()
-    while run:
-        placed_obstacle = False
-        clock.tick(FPS)
+
+    while simulator_run:
+        clock.tick(Constants.FPS)
+
+        # Handle player inputs
         for event in pygame.event.get():
+            # Quit
             if event.type == pygame.QUIT:
-                run = False
-            # Click to place obstacles
-            elif event.type == pygame.MOUSEBUTTONDOWN and not pathfinding_start:
-                pos = pygame.mouse.get_pos()
-                x, y = pos[0] // (GRID_WIDTH //
-                                  GRID_NUM), pos[1] // (GRID_HEIGHT // GRID_NUM)
-                if grid[x][y] == 0:
-                    grid[x][y] = 1
-                    color_obstacle_face(pos, x, y)
-                    placed_obstacle = True
+                simulator_run = False
+            # Mouse Input
+            elif event.type == pygame.MOUSEBUTTONDOWN and can_place_obstacle:
+                handle_obstacle_placement()
+            # Keyboard Input
             elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_UP:
-                    robot.y -= VEL
-                elif event.key == pygame.K_DOWN:
-                    robot.y += VEL
-                elif event.key == pygame.K_LEFT:
-                    robot.x -= VEL
-                if event.key == pygame.K_RIGHT:
-                    robot.x += VEL
+                # WASD -> Control robot manually
+                if can_control_robot:
+                    handle_robot_control(event, robot)
+                # 'SPACE' -> Start pathfinding - Disable obstacle placement and robot manual movement
+                if event.key == pygame.K_SPACE:
+                    print_obstacles()
+                    can_place_obstacle = False
+                    can_control_robot = False
+                    print("Start pathfinding!")
 
-            # Start pathfinding
-
-        draw_window()
-        WIN.blit(ROBOT, (robot.x, robot.y))
+        # Draw pygame environment onto screen - grid, obstacles, robot etc
+        environment.render_environment(obstacle_list)
+        robot.render_robot()
         pygame.display.update()
     pygame.quit()
 
