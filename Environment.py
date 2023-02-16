@@ -1,16 +1,5 @@
-import os
 import Constants
 import pygame
-
-
-# Obstacle images
-OBSTACLE_IMG_FILE = pygame.image.load(
-    os.path.join('Assets', 'Obstacle.png'))
-OBSTACLE_IMG_N = pygame.transform.scale(
-    OBSTACLE_IMG_FILE, (Constants.OBSTACLE_WIDTH, Constants.OBSTACLE_HEIGHT))
-OBSTACLE_IMG_S = pygame.transform.rotate(OBSTACLE_IMG_N, 180)
-OBSTACLE_IMG_E = pygame.transform.rotate(OBSTACLE_IMG_N, 90)
-OBSTACLE_IMG_W = pygame.transform.rotate(OBSTACLE_IMG_N, -90)
 
 
 '''
@@ -72,22 +61,10 @@ class Environment:
 
     def __draw_obstacles(self, obstacle_list):
         '''
-        This function uses Pygame to draw obstacles on grid cells that have value of `1`
-        Constants.WIN.blit method is used to render the obstacle image
+        This function uses Pygame to draw obstacles on grid cells
         '''
         for obs in obstacle_list:
-            x, y = obs.get_pos().get()
-            obstacle_grid_destination = (x * Constants.GRID_CELL_SIZE - 15 * Constants.UNIT,
-                                         y * Constants.GRID_CELL_SIZE - 15 * Constants.UNIT)
-            obs_dir = obs.get_direction()
-            if obs_dir == Constants.NORTH:
-                Constants.WIN.blit(OBSTACLE_IMG_N, obstacle_grid_destination)
-            elif obs_dir == Constants.SOUTH:
-                Constants.WIN.blit(OBSTACLE_IMG_S, obstacle_grid_destination)
-            elif obs_dir == Constants.EAST:
-                Constants.WIN.blit(OBSTACLE_IMG_E, obstacle_grid_destination)
-            else:
-                Constants.WIN.blit(OBSTACLE_IMG_W, obstacle_grid_destination)
+            obs.render_obstacle()
 
     def render_environment(self, obstacle_list):
         '''
