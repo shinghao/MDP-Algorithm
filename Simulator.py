@@ -10,84 +10,87 @@ grid = [[0 for _ in range(Constants.GRID_NUM)]
         for _ in range(Constants.GRID_NUM)]
 pathfinding_start = False
 
-# Initialise obstacle list
-obstacle_list = []
 
-# Window name
-pygame.display.set_caption("MDP Algorithm Simulator")
+class Sim:
+    def __init__(self):
+        # Initalise robot object
+        self.robot = Robot.Robot(Constants.WIN, self)
 
+        # Initalise Environment object
+        self.environment = Environment.Environment()
 
-def to_pygame_y_coord(y_coordinate):
-    '''
-    Convert y-coordinates into pygame y-coordinates.
-    This is required as pygame takes the top left of the window as the origin (0,0)
-    while we are using the bottom left of the window as the origin
-    '''
-    return Constants.WIN_HEIGHT - y_coordinate
+        # Initialise obstacle list
+        self.obstacle_list = []
 
+        self.refresh_screen()
 
-def get_obstacle_direction(mouse_pos):
-    x = mouse_pos[0] / Constants.UNIT % 10
-    y = mouse_pos[1] / Constants.UNIT % 10
+    def get_robot(self):
+        return self.robot
 
-    # calculate the coordinates of each face of the obstacle
-    if x < 3:
-        return Constants.Direction.EAST
-    elif x > 7:
-        return Constants.Direction.WEST
-    elif y > 7:
-        return Constants.Direction.SOUTH
-    else:
-        return Constants.Direction.NORTH
+    def get_environment(self):
+        return self.environment
 
+    def refresh_screen(self):
+        # Draw pygame environment onto screen - grid, obstacles, robot etc
+        self.environment.render_environment(self.obstacle_list)
+        self.robot.render_robot()
+        pygame.display.update()
 
-def change_obstacle_direction(new_obstacle_dir, x, y):
-    for obs in obstacle_list:
-        if obs.get_coordinates() == (x, y):
-            obs.set_direction(new_obstacle_dir)
-            break
+    def get_obstacle_direction(self, mouse_pos):
+        x = mouse_pos[0] / Constants.UNIT % 10
+        y = mouse_pos[1] / Constants.UNIT % 10
 
+        # calculate the coordinates of each face of the obstacle
+        if x < 3:
+            return Constants.Direction.EAST
+        elif x > 7:
+            return Constants.Direction.WEST
+        elif y > 7:
+            return Constants.Direction.SOUTH
+        else:
+            return Constants.Direction.NORTH
 
-def handle_obstacle_placement():
-    pos = pygame.mouse.get_pos()
-    x = pos[0] // Constants.GRID_CELL_SIZE
-    y = pos[1] // Constants.GRID_CELL_SIZE
-    obstacle_dir = get_obstacle_direction(pos)
-    if grid[x][y] == 0:
-        grid[x][y] = 1
-        obstacle_list.append(Obstacle.Obstacle(x, y, obstacle_dir))
-    if grid[x][y] == 1:
-        change_obstacle_direction(obstacle_dir, x, y)
+    def change_obstacle_direction(self, new_obstacle_dir, x, y):
+        for obs in self.obstacle_list:
+            if obs.get_coordinates() == (x, y):
+                obs.set_direction(new_obstacle_dir)
+                break
 
+    def handle_obstacle_placement(self):
+        pos = pygame.mouse.get_pos()
+        x = pos[0] // Constants.GRID_CELL_SIZE
+        y = pos[1] // Constants.GRID_CELL_SIZE
+        obstacle_dir = self.get_obstacle_direction(pos)
+        if grid[x][y] == 0:
+            grid[x][y] = 1
+            self.obstacle_list.append(Obstacle.Obstacle(x, y, obstacle_dir))
+        if grid[x][y] == 1:
+            self.change_obstacle_direction(obstacle_dir, x, y)
 
-def handle_robot_control(event, robot):
-    if event.key == pygame.K_w:
-        robot.move_forward()
-    elif event.key == pygame.K_s:
-        robot.move_backward()
-    elif event.key == pygame.K_a:
-        robot.move_left_forward()
-    if event.key == pygame.K_d:
-        robot.move_right_forward()
-
-
-def print_obstacles():
-    for obs in obstacle_list:
-        print(obs.get_coordinates(),
-              obs.get_direction().name)
+    def handle_robot_control(self, event, robot):
+        if event.key == pygame.K_w:
+            robot.move_forward()
+        elif event.key == pygame.K_s:
+            robot.move_backward()
+        elif event.key == pygame.K_a:
+            robot.move_left_forward()
+        if event.key == pygame.K_d:
+            robot.move_right_forward()
 
 
 def main():
-    # Initalise robot object
-    robot = Robot.Robot(Constants.WIN)
+    # # Initalise robot object
+    # robot = Robot.Robot(Constants.WIN)
 
-    # Initalise Environment object
-    environment = Environment.Environment()
+    # # Initalise Environment object
+    # environment = Environment.Environment()
 
     simulator_run = True
     can_place_obstacle = True
     can_control_robot = True
     clock = pygame.time.Clock()
+
+    sim = Sim()
 
     while simulator_run:
         clock.tick(Constants.FPS)
@@ -99,23 +102,21 @@ def main():
                 simulator_run = False
             # Mouse Input
             elif event.type == pygame.MOUSEBUTTONDOWN and can_place_obstacle:
-                handle_obstacle_placement()
+                sim.handle_obstacle_placement()
+                sim.refresh_screen()
             # Keyboard Input
             elif event.type == pygame.KEYUP:
                 # WASD -> Control robot manually
                 if can_control_robot:
-                    handle_robot_control(event, robot)
+                    sim.handle_robot_control(event, sim.get_robot())
                 # 'SPACE' -> Start pathfinding - Disable obstacle placement and robot manual movement
                 if event.key == pygame.K_SPACE:
-                    print_obstacles()
                     can_place_obstacle = False
                     can_control_robot = False
                     print("Start pathfinding!")
 
         # Draw pygame environment onto screen - grid, obstacles, robot etc
-        environment.render_environment(obstacle_list)
-        robot.render_robot()
-        pygame.display.update()
+
     pygame.quit()
 
 
