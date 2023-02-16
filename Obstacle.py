@@ -1,9 +1,9 @@
-import Constants
+from Pair import pair
 
 
 class Obstacle:
-    def __init__(self, x_coord, y_coord, dir):
-        self.coordinates = x_coord, y_coord
+    def __init__(self, pos: pair, dir):
+        self.pos = pos
         self.dir = dir
         self.visited = False
 
@@ -13,5 +13,6 @@ class Obstacle:
     def get_direction(self):
         return self.dir
 
-    def get_coordinates(self):
-        return self.coordinates
+    # Pair type
+    def get_pos(self):
+        return self.pos

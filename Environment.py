@@ -70,7 +70,7 @@ class Environment:
         Constants.WIN.blit method is used to render the obstacle image
         '''
         for obs in obstacle_list:
-            x, y = obs.get_coordinates()
+            x, y = obs.get_pos().get()
             obstacle_grid_destination = (x * Constants.GRID_CELL_SIZE - 15 * Constants.UNIT,
                                          y * Constants.GRID_CELL_SIZE - 15 * Constants.UNIT)
             obs_dir = obs.get_direction()

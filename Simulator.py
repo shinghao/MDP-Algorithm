@@ -53,7 +53,7 @@ class Sim:
 
     def change_obstacle_direction(self, new_obstacle_dir, x, y):
         for obs in self.obstacle_list:
-            if obs.get_coordinates() == (x, y):
+            if obs.get_pos().get() == (x, y):
                 obs.set_direction(new_obstacle_dir)
                 break
 
@@ -64,7 +64,8 @@ class Sim:
         obstacle_dir = self.get_obstacle_direction(pos)
         if self.grid[x][y] == 0:
             self.grid[x][y] = 1
-            self.obstacle_list.append(Obstacle.Obstacle(x, y, obstacle_dir))
+            self.obstacle_list.append(
+                Obstacle.Obstacle(pair(x, y), obstacle_dir))
         if self.grid[x][y] == 1:
             self.change_obstacle_direction(obstacle_dir, x, y)
 
