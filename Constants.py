@@ -22,7 +22,7 @@ WIN_WIDTH, WIN_HEIGHT = GRID_WIDTH, GRID_HEIGHT
 ROBOT_WIDTH, ROBOT_HEIGHT = 30 * UNIT, 30 * UNIT
 ROBOT_START_X, ROBOT_START_Y = 0, GRID_HEIGHT - 40 * UNIT
 ROBOT_START_ANGLE = 0
-ROBOT_VEL = 10  # Velocity - speed of robot
+ROBOT_VEL = 0.1  # Velocity - speed of robot
 ROBOT_TURN_RADIUS = 30 * UNIT
 
 # Obstacle
@@ -37,9 +37,7 @@ WIN = pygame.display.set_mode(
     (WIN_WIDTH, WIN_HEIGHT))  # Game window
 
 
-class Direction(Enum):
-    '''Direction Enum'''
-    NORTH = 0
-    SOUTH = 180
-    EAST = -90
-    WEST = 90
+NORTH = 0
+SOUTH = 180
+EAST = -90
+WEST = 90

@@ -15,6 +15,3 @@ class Obstacle:
 
     def get_coordinates(self):
         return self.coordinates
-
-    def set_visited(self):
-        self.visited = True

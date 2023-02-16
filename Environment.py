@@ -74,11 +74,11 @@ class Environment:
             obstacle_grid_destination = (x * Constants.GRID_CELL_SIZE - 15 * Constants.UNIT,
                                          y * Constants.GRID_CELL_SIZE - 15 * Constants.UNIT)
             obs_dir = obs.get_direction()
-            if obs_dir == Constants.Direction.NORTH:
+            if obs_dir == Constants.NORTH:
                 Constants.WIN.blit(OBSTACLE_IMG_N, obstacle_grid_destination)
-            elif obs_dir == Constants.Direction.SOUTH:
+            elif obs_dir == Constants.SOUTH:
                 Constants.WIN.blit(OBSTACLE_IMG_S, obstacle_grid_destination)
-            elif obs_dir == Constants.Direction.EAST:
+            elif obs_dir == Constants.EAST:
                 Constants.WIN.blit(OBSTACLE_IMG_E, obstacle_grid_destination)
             else:
                 Constants.WIN.blit(OBSTACLE_IMG_W, obstacle_grid_destination)

@@ -4,12 +4,14 @@ import Constants
 import Obstacle
 import Environment
 import Robot
+from Pair import pair
 
 
 class Sim:
     def __init__(self):
         # Initalise robot object
-        self.robot = Robot.Robot(Constants.WIN, self)
+        self.robot = Robot.Robot(Constants.WIN, self, pair(
+            Constants.ROBOT_START_X, Constants.ROBOT_START_Y))
 
         # Initalise Environment object
         self.environment = Environment.Environment()
@@ -18,8 +20,8 @@ class Sim:
         self.obstacle_list = []
 
         # Initialise grid 2d array
-        grid = [[0 for _ in range(Constants.GRID_NUM)]
-                for _ in range(Constants.GRID_NUM)]
+        self.grid = [[0 for _ in range(Constants.GRID_NUM)]
+                     for _ in range(Constants.GRID_NUM)]
 
         self.refresh_screen()
 
@@ -41,13 +43,13 @@ class Sim:
 
         # calculate the coordinates of each face of the obstacle
         if x < 3:
-            return Constants.Direction.EAST
+            return Constants.EAST
         elif x > 7:
-            return Constants.Direction.WEST
+            return Constants.WEST
         elif y > 7:
-            return Constants.Direction.SOUTH
+            return Constants.SOUTH
         else:
-            return Constants.Direction.NORTH
+            return Constants.NORTH
 
     def change_obstacle_direction(self, new_obstacle_dir, x, y):
         for obs in self.obstacle_list:
