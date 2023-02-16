@@ -11,10 +11,6 @@ These components that make up the environment is drawn on the pygame window by c
 class Environment:
     def __init__(self):
 
-        # Activate the pygame library
-        pygame.init()
-        pygame.display.set_caption("MDP Algorithm Simulator")
-
         # Pygame Start Rectangle Box
         self.startRect = pygame.Rect(Constants.START_X, Constants.GRID_HEIGHT - (Constants.START_Y * Constants.UNIT),
                                      Constants.START_WIDTH, Constants.START_HEIGHT)
@@ -44,21 +40,6 @@ class Environment:
         start_text = self.font.render('Start', True, Constants.WHITE, None)
         Constants.WIN.blit(start_text, self.startTextRect)
 
-    def __draw_grid(self):
-        '''
-        This function uses Pygame to draw a grid on the game window.
-        Each line is calculated using the dimensions of the grid (Constants.GRID_WIDTH, Constants.GRID_HEIGHT) and the number of divisions (Constants.GRID_NUM).
-        '''
-
-        # Vertical line
-        for i in range(Constants.GRID_NUM + 1):
-            pygame.draw.line(Constants.WIN, Constants.BLACK, (i * Constants.GRID_CELL_SIZE,
-                                                              0), (i * Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT))
-        # Horizontal line
-        for i in range(Constants.GRID_NUM + 1):
-            pygame.draw.line(Constants.WIN, Constants.BLACK, (0, Constants.GRID_HEIGHT - (i * Constants.GRID_CELL_SIZE)),
-                             (Constants.GRID_WIDTH, Constants.GRID_HEIGHT - (i * Constants.GRID_CELL_SIZE)))
-
     def __draw_obstacles(self, obstacle_list):
         '''
         This function uses Pygame to draw obstacles on grid cells
@@ -72,5 +53,4 @@ class Environment:
         '''
         self.__draw_window()
         self.__draw_start_box()
-        self.__draw_grid()
         self.__draw_obstacles(obstacle_list)

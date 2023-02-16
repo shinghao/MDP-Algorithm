@@ -2,13 +2,15 @@ from enum import Enum
 import pygame
 
 # Colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+
 COLOR_START = (52, 152, 219)
 COLOR_GRID_BG = (199, 236, 255)
+COLOR_GRID_LINE = BLACK
 COLOR_BG = (223, 230, 233)
 COLOR_BTN_START = (106, 176, 76)
 COLOR_BTN_RESET = (235, 77, 75)
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
 
 # Constants
 FPS = 120  # Frames per second

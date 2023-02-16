@@ -4,11 +4,15 @@ import Obstacle
 import Environment
 import Robot
 import Panel
+import Grid
 from Pair import pair
 
 
 class Sim:
     def __init__(self):
+        # Activate the pygame library
+        pygame.init()
+        pygame.display.set_caption("MDP Algorithm Simulator")
 
         # Booleans
         self.can_place_obstacle = True
@@ -28,9 +32,8 @@ class Sim:
         self.instruction_list = []
 
         # Initialise grid 2d array
-        self.grid = [[0 for _ in range(Constants.GRID_NUM)]
-                     for _ in range(Constants.GRID_NUM)]
-
+        self.grid = Grid.Grid(Constants.WIN, Constants.GRID_NUM,
+                              Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT, Constants.GRID_WIDTH, Constants.COLOR_GRID_LINE)
         # Initialise UI panel
         self.panel = Panel.Panel(Constants.WIN)
 
@@ -39,6 +42,7 @@ class Sim:
     def refresh_screen(self):
         # Draw pygame environment onto screen - grid, obstacles, robot etc
         self.environment.render_environment(self.obstacle_list)
+        self.grid.render_grid()
         self.robot.render_robot()
         self.panel.render_panel()
         pygame.display.update()
@@ -70,11 +74,13 @@ class Sim:
         x = pos[0] // Constants.GRID_CELL_SIZE
         y = pos[1] // Constants.GRID_CELL_SIZE
         obstacle_dir = self.get_obstacle_direction(pos)
-        if self.grid[x][y] == 0:
-            self.grid[x][y] = 1
+
+        if self.grid.get_cell(x, y) == 0:
+            self.grid.set_cell(x, y, 1)
             self.obstacle_list.append(
                 Obstacle.Obstacle(pair(x, y), obstacle_dir))
-        if self.grid[x][y] == 1:
+
+        if self.grid.get_cell(x, y) == 1:
             self.change_obstacle_direction(obstacle_dir, x, y)
 
     def handle_robot_control(self, event):
@@ -102,8 +108,8 @@ class Sim:
         self.robot = Robot.Robot(Constants.WIN, self, pair(
             Constants.ROBOT_START_X, Constants.ROBOT_START_Y))
         self.obstacle_list = []
-        self.grid = [[0 for _ in range(Constants.GRID_NUM)]
-                     for _ in range(Constants.GRID_NUM)]
+        self.grid = Grid.Grid(Constants.WIN, Constants.GRID_NUM,
+                              Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT, Constants.GRID_WIDTH, Constants.COLOR_GRID_LINE)
         self.refresh_screen()
 
     def start_pathfinding(self):
