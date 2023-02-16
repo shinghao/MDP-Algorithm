@@ -79,12 +79,8 @@ class Robot:
             target_pos = initial_pos + pair(-ONE_CELL, 0)
 
         while not self.is_movement_complete(target_pos):
-            step = pair(math.sin(self.angle), math.cos(self.angle))
-            step *= -self.velocity
-            self.set_pos(self.pos + step)
-            self.sim.refresh_screen()
-        self.set_pos(target_pos)
-        self.sim.refresh_screen()
+            self.__move_a_step(-self.velocity, 0)
+        self.__adjust_robot(target_pos, initial_angle)
 
     def move_backward(self):
         """
@@ -105,12 +101,8 @@ class Robot:
             target_pos = initial_pos + pair(ONE_CELL, 0)
 
         while not self.is_movement_complete(target_pos):
-            step = pair(math.sin(self.angle), math.cos(self.angle))
-            step *= self.velocity
-            self.set_pos(self.pos + step)
-            self.sim.refresh_screen()
-        self.set_pos(target_pos)
-        self.sim.refresh_screen()
+            self.__move_a_step(self.velocity, 0)
+        self.__adjust_robot(target_pos, initial_angle)
 
     def move_left_forward(self):
         """
@@ -141,14 +133,9 @@ class Robot:
             target_angle = Constants.SOUTH
 
         while not self.is_movement_complete(target_pos):
-            step = pair(math.sin(self.angle), math.cos(self.angle))
-            step *= -self.velocity
-            self.set_pos(self.pos + step)
-            self.set_angle(self.angle + (self.velocity / self.turn_radius))
-            self.sim.refresh_screen()
-        self.set_pos(target_pos)
-        self.set_angle(math.radians(target_angle))
-        self.sim.refresh_screen()
+            self.__move_a_step(-self.velocity, 1)
+
+        self.__adjust_robot(target_pos, target_angle)
 
     def move_right_forward(self):
         """
@@ -179,13 +166,25 @@ class Robot:
             target_angle = Constants.NORTH
 
         while not self.is_movement_complete(target_pos):
-            step = pair(math.sin(self.angle), math.cos(self.angle))
-            step *= -self.velocity
-            self.set_pos(self.pos + step)
-            self.set_angle(self.angle - (self.velocity / self.turn_radius))
-            self.sim.refresh_screen()
+            self.__move_a_step(-self.velocity, -1)
+        self.__adjust_robot(target_pos, target_angle)
+
+    def __move_a_step(self, velocity, angle_direction):
+        step = pair(math.sin(self.angle), math.cos(self.angle))
+        step *= velocity
+        self.set_pos(self.pos + step)
+        self.set_angle(self.angle + angle_direction *
+                       (self.velocity / self.turn_radius))
+        self.sim.refresh_screen()
+
+    def __adjust_robot(self, target_pos, target_angle):
+        '''
+        This function ensures that robot sits perfectly on the grid cell
+        This is required as the angle/position might be off by a tiny margin when the robot finish executing each instruction
+        '''
         self.set_pos(target_pos)
         self.set_angle(math.radians(target_angle))
+        self.sim.refresh_screen()
         self.sim.refresh_screen()
 
     def render_robot(self):
