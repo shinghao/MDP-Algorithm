@@ -31,7 +31,8 @@ class Environment:
                                      Constants.START_WIDTH, Constants.START_HEIGHT)
         self.startTextRect = pygame.Rect(Constants.START_X + 6, Constants.GRID_HEIGHT - (28 * Constants.UNIT),
                                          Constants.START_WIDTH, Constants.START_HEIGHT)
-
+        self.gridRect = pygame.Rect(
+            0, 0, Constants.GRID_WIDTH, Constants.GRID_HEIGHT)
         # Initalise font
         self.font = pygame.font.Font('freesansbold.ttf', 46)
 
@@ -39,7 +40,11 @@ class Environment:
         '''
         This function fills the Pygame window background white
         '''
-        Constants.WIN.fill(Constants.WHITE)
+        Constants.WIN.fill(Constants.COLOR_BG)
+
+        # Grid background
+        pygame.draw.rect(Constants.WIN, Constants.COLOR_GRID_BG,
+                         self.gridRect)
 
     def __draw_start_box(self):
         '''
@@ -55,12 +60,13 @@ class Environment:
         This function uses Pygame to draw a grid on the game window.
         Each line is calculated using the dimensions of the grid (Constants.GRID_WIDTH, Constants.GRID_HEIGHT) and the number of divisions (Constants.GRID_NUM).
         '''
+
         # Vertical line
-        for i in range(Constants.GRID_NUM):
+        for i in range(Constants.GRID_NUM + 1):
             pygame.draw.line(Constants.WIN, Constants.BLACK, (i * Constants.GRID_CELL_SIZE,
                                                               0), (i * Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT))
         # Horizontal line
-        for i in range(Constants.GRID_NUM):
+        for i in range(Constants.GRID_NUM + 1):
             pygame.draw.line(Constants.WIN, Constants.BLACK, (0, Constants.GRID_HEIGHT - (i * Constants.GRID_CELL_SIZE)),
                              (Constants.GRID_WIDTH, Constants.GRID_HEIGHT - (i * Constants.GRID_CELL_SIZE)))
 

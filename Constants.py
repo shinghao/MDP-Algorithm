@@ -3,6 +3,10 @@ import pygame
 
 # Colors
 COLOR_START = (138, 183, 255)
+COLOR_GRID_BG = (199, 236, 255)
+COLOR_BG = (223, 230, 233)
+COLOR_BTN_START = (106, 176, 76)
+COLOR_BTN_RESET = (235, 77, 75)
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
@@ -14,9 +18,6 @@ UNIT = 3  # Multiplier to allow window space to be bigger
 GRID_NUM = 20  # number of grid squares
 GRID_WIDTH, GRID_HEIGHT = 200 * UNIT, 200 * UNIT
 GRID_CELL_SIZE = GRID_WIDTH // GRID_NUM
-
-# Dimensions of Pygame window
-WIN_WIDTH, WIN_HEIGHT = GRID_WIDTH, GRID_HEIGHT
 
 # Robot
 ROBOT_WIDTH, ROBOT_HEIGHT = 30 * UNIT, 30 * UNIT
@@ -32,12 +33,29 @@ OBSTACLE_WIDTH, OBSTACLE_HEIGHT = 40 * UNIT, 40 * UNIT
 START_X, START_Y = 0, 40
 START_WIDTH, START_HEIGHT = 40 * UNIT, 40 * UNIT
 
+# Dimensions of Pygame window
+WIN_WIDTH, WIN_HEIGHT = 1000, GRID_HEIGHT
+
 # Pygame Window
-WIN = pygame.display.set_mode(
-    (WIN_WIDTH, WIN_HEIGHT))  # Game window
+WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))  # Game window
 
-
+# DIRECTIONS
 NORTH = 0
 SOUTH = 180
 EAST = -90
 WEST = 90
+
+
+# Buttons
+BTN_WIDTH, BTN_HEIGHT = 60 * UNIT, 14 * UNIT
+
+BTN_START_X, BTN_START_Y = (
+    WIN_WIDTH - GRID_WIDTH - BTN_WIDTH) / 2 + GRID_WIDTH, WIN_HEIGHT - 50 * UNIT
+BTN_RESET_X, BTN_RESET_Y = (
+    WIN_WIDTH - GRID_WIDTH - BTN_WIDTH) / 2 + GRID_WIDTH, WIN_HEIGHT - 30 * UNIT
+
+BTN_FONT_SIZE = 20
+
+# Button States
+BTN_STATE_START = "START"
+BTN_STATE_RESET = "RESTART"

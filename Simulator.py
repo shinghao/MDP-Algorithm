@@ -1,14 +1,19 @@
 import pygame
-import math
 import Constants
 import Obstacle
 import Environment
 import Robot
+import Panel
 from Pair import pair
 
 
 class Sim:
     def __init__(self):
+
+        # Booleans
+        self.can_place_obstacle = True
+        self.can_control_robot = True
+
         # Initalise robot object
         self.robot = Robot.Robot(Constants.WIN, self, pair(
             Constants.ROBOT_START_X, Constants.ROBOT_START_Y))
@@ -23,18 +28,16 @@ class Sim:
         self.grid = [[0 for _ in range(Constants.GRID_NUM)]
                      for _ in range(Constants.GRID_NUM)]
 
+        # Initialise UI panel
+        self.panel = Panel.Panel(Constants.WIN)
+
         self.refresh_screen()
-
-    def get_robot(self):
-        return self.robot
-
-    def get_environment(self):
-        return self.environment
 
     def refresh_screen(self):
         # Draw pygame environment onto screen - grid, obstacles, robot etc
         self.environment.render_environment(self.obstacle_list)
         self.robot.render_robot()
+        self.panel.render_panel()
         pygame.display.update()
 
     def get_obstacle_direction(self, mouse_pos):
@@ -58,6 +61,8 @@ class Sim:
                 break
 
     def handle_obstacle_placement(self):
+        if not self.can_place_obstacle:
+            return
         pos = pygame.mouse.get_pos()
         x = pos[0] // Constants.GRID_CELL_SIZE
         y = pos[1] // Constants.GRID_CELL_SIZE
@@ -69,22 +74,41 @@ class Sim:
         if self.grid[x][y] == 1:
             self.change_obstacle_direction(obstacle_dir, x, y)
 
-    def handle_robot_control(self, event, robot):
+    def handle_robot_control(self, event):
+        if not self.can_control_robot:
+            return
         if event.key == pygame.K_w:
-            robot.move_forward()
+            self.robot.move_forward()
         elif event.key == pygame.K_s:
-            robot.move_backward()
+            self.robot.move_backward()
         elif event.key == pygame.K_a:
-            robot.move_left_forward()
+            self.robot.move_left_forward()
         if event.key == pygame.K_d:
-            robot.move_right_forward()
+            self.robot.move_right_forward()
+
+    def handle_button_press(self):
+        if (self.panel.check_button_pressed() == Constants.BTN_STATE_START):
+            print("Start Pathfinding!")
+            self.can_place_obstacle = False
+            self.can_control_robot = False
+        elif (self.panel.check_button_pressed() == Constants.BTN_STATE_RESET):
+            self.reset()
+
+    def reset(self):
+        self.can_place_obstacle = True
+        self.can_control_robot = True
+        self.robot = Robot.Robot(Constants.WIN, self, pair(
+            Constants.ROBOT_START_X, Constants.ROBOT_START_Y))
+        self.obstacle_list = []
+        self.grid = [[0 for _ in range(Constants.GRID_NUM)]
+                     for _ in range(Constants.GRID_NUM)]
+        self.refresh_screen()
 
 
 def main():
 
     simulator_run = True
-    can_place_obstacle = True
-    can_control_robot = True
+
     clock = pygame.time.Clock()
 
     sim = Sim()
@@ -98,21 +122,17 @@ def main():
             if event.type == pygame.QUIT:
                 simulator_run = False
             # Mouse Input
-            elif event.type == pygame.MOUSEBUTTONDOWN and can_place_obstacle:
-                sim.handle_obstacle_placement()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if (pos[0] < Constants.GRID_WIDTH and pos[1] < Constants.GRID_HEIGHT):
+                    sim.handle_obstacle_placement()
+                else:
+                    sim.handle_button_press()
                 sim.refresh_screen()
             # Keyboard Input
             elif event.type == pygame.KEYUP:
                 # WASD -> Control robot manually
-                if can_control_robot:
-                    sim.handle_robot_control(event, sim.get_robot())
-                # 'SPACE' -> Start pathfinding - Disable obstacle placement and robot manual movement
-                if event.key == pygame.K_SPACE:
-                    can_place_obstacle = False
-                    can_control_robot = False
-                    print("Start pathfinding!")
-
-        # Draw pygame environment onto screen - grid, obstacles, robot etc
+                sim.handle_robot_control(event)
 
     pygame.quit()
 
