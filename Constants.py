@@ -2,7 +2,7 @@ from enum import Enum
 import pygame
 
 # Colors
-COLOR_START = (138, 183, 255)
+COLOR_START = (52, 152, 219)
 COLOR_GRID_BG = (199, 236, 255)
 COLOR_BG = (223, 230, 233)
 COLOR_BTN_START = (106, 176, 76)
