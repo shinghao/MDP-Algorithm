@@ -2,16 +2,19 @@ import math
 import pygame
 import os
 import Constants
-
+from Simulator import Sim
 ROBOT_IMG_FILE = pygame.image.load(os.path.join('Assets', 'Robot.png'))
 
 '''
 The Robot class handles the movement and rendering of the robot
 '''
 
+ONE_CELL = 10 * Constants.UNIT
+
 
 class Robot:
-    def __init__(self, window):
+
+    def __init__(self, window, sim: Sim):
 
         # Initialise the position of the robot on the x and y axis
         self.pos_x = Constants.ROBOT_START_X
@@ -30,9 +33,8 @@ class Robot:
         self.img = pygame.transform.scale(
             ROBOT_IMG_FILE, (Constants.ROBOT_WIDTH, Constants.ROBOT_HEIGHT))
 
-        # Initialise the pygame window
         self.window = window
-        self.render_robot()
+        self.sim = sim
 
     def get_x_coord(self):
 
@@ -43,6 +45,9 @@ class Robot:
 
     def get_angle(self):
         return self.angle
+
+    def get_pos(self):
+        return (self.pos_x, self.pos_y)
 
     def set_coordinates(self, pos_x, pos_y):
         self.pos_x = pos_x
@@ -57,21 +62,35 @@ class Robot:
     def get_velocity(self):
         return self.velocity
 
+    def check_movement_complete(self, target_pos):
+        return abs(self.get_pos()[0] - target_pos[0]) < self.velocity and abs(
+            self.get_pos()[1] - target_pos[1]) < self.velocity
+
     def move_forward(self):
         """
         Moves the robot forward in the direction of its orientation
         """
-        self.pos_x += self.velocity * math.sin(self.angle)
-        self.pos_y -= self.velocity * math.cos(self.angle)
+        initial_pos = self.get_pos()
+        target_pos = (initial_pos[0] + ONE_CELL * math.sin(self.angle),
+                      initial_pos[1] - ONE_CELL * math.cos(self.angle))
+
+        while not self.check_movement_complete(target_pos):
+            self.pos_x += self.velocity * math.sin(self.angle)
+            self.pos_y -= self.velocity * math.cos(self.angle)
+            self.sim.refresh_screen()
 
     def move_backward(self):
         """
         Moves the robot backward in the opposite direction of its orientation
         """
-        self.pos_x += self.velocity * \
-            math.sin(self.angle)
-        self.pos_y += self.velocity * \
-            math.cos(self.angle)
+        initial_pos = self.get_pos()
+        target_pos = (initial_pos[0] + ONE_CELL * math.sin(self.angle),
+                      initial_pos[1] + ONE_CELL * math.cos(self.angle))
+
+        while not self.check_movement_complete(target_pos):
+            self.pos_x += self.velocity * math.sin(self.angle)
+            self.pos_y += self.velocity * math.cos(self.angle)
+            self.sim.refresh_screen()
 
     def move_left_forward(self):
         """
@@ -80,6 +99,7 @@ class Robot:
         self.pos_x += self.velocity * math.sin(self.angle)
         self.pos_y -= self.velocity * math.cos(self.angle)
         self.angle -= (self.velocity / self.turn_radius)
+        self.sim.refresh_screen()
 
     def move_right_forward(self):
         """
@@ -88,6 +108,7 @@ class Robot:
         self.pos_x += self.velocity * math.sin(self.angle)
         self.pos_y -= self.velocity * math.cos(self.angle)
         self.angle += (self.velocity / self.turn_radius)
+        self.sim.refresh_screen()
 
     def render_robot(self):
         '''
