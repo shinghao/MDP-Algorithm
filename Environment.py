@@ -24,6 +24,7 @@ class Environment:
 
         # Activate the pygame library
         pygame.init()
+        pygame.display.set_caption("MDP Algorithm Simulator")
 
         # Pygame Start Rectangle Box
         self.startRect = pygame.Rect(Constants.START_X, Constants.GRID_HEIGHT - (Constants.START_Y * Constants.UNIT),

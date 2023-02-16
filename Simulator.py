@@ -5,11 +5,6 @@ import Obstacle
 import Environment
 import Robot
 
-# Initialise grid 2d array
-grid = [[0 for _ in range(Constants.GRID_NUM)]
-        for _ in range(Constants.GRID_NUM)]
-pathfinding_start = False
-
 
 class Sim:
     def __init__(self):
@@ -21,6 +16,10 @@ class Sim:
 
         # Initialise obstacle list
         self.obstacle_list = []
+
+        # Initialise grid 2d array
+        grid = [[0 for _ in range(Constants.GRID_NUM)]
+                for _ in range(Constants.GRID_NUM)]
 
         self.refresh_screen()
 
@@ -61,10 +60,10 @@ class Sim:
         x = pos[0] // Constants.GRID_CELL_SIZE
         y = pos[1] // Constants.GRID_CELL_SIZE
         obstacle_dir = self.get_obstacle_direction(pos)
-        if grid[x][y] == 0:
-            grid[x][y] = 1
+        if self.grid[x][y] == 0:
+            self.grid[x][y] = 1
             self.obstacle_list.append(Obstacle.Obstacle(x, y, obstacle_dir))
-        if grid[x][y] == 1:
+        if self.grid[x][y] == 1:
             self.change_obstacle_direction(obstacle_dir, x, y)
 
     def handle_robot_control(self, event, robot):
@@ -79,11 +78,6 @@ class Sim:
 
 
 def main():
-    # # Initalise robot object
-    # robot = Robot.Robot(Constants.WIN)
-
-    # # Initalise Environment object
-    # environment = Environment.Environment()
 
     simulator_run = True
     can_place_obstacle = True
