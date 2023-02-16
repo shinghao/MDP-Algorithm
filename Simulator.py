@@ -24,6 +24,9 @@ class Sim:
         # Initialise obstacle list
         self.obstacle_list = []
 
+        # Initialise instruction list
+        self.instruction_list = []
+
         # Initialise grid 2d array
         self.grid = [[0 for _ in range(Constants.GRID_NUM)]
                      for _ in range(Constants.GRID_NUM)]
@@ -88,9 +91,8 @@ class Sim:
 
     def handle_button_press(self):
         if (self.panel.check_button_pressed() == Constants.BTN_STATE_START):
-            print("Start Pathfinding!")
-            self.can_place_obstacle = False
-            self.can_control_robot = False
+            self.start_pathfinding()
+
         elif (self.panel.check_button_pressed() == Constants.BTN_STATE_RESET):
             self.reset()
 
@@ -103,6 +105,20 @@ class Sim:
         self.grid = [[0 for _ in range(Constants.GRID_NUM)]
                      for _ in range(Constants.GRID_NUM)]
         self.refresh_screen()
+
+    def start_pathfinding(self):
+        print("Start Pathfinding!")
+        self.can_place_obstacle = False
+        self.can_control_robot = False
+        for instruction in self.instruction_list:
+            if instruction == "move_forward":
+                self.robot.move_forward()
+            elif instruction == "move_backward":
+                self.robot.move_backward()
+            elif instruction == "move_left_forward":
+                self.robot.move_left_forward()
+            if instruction == "move_right_forward":
+                self.robot.move_right_forward()
 
 
 def main():
