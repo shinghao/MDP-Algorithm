@@ -44,8 +44,8 @@ class Environment:
         '''
         This function uses Pygame to draw obstacles on grid cells
         '''
-        for obs in obstacle_list:
-            obs.render_obstacle()
+        for obstacle in obstacle_list:
+            obstacle.render_obstacle()
 
     def render_environment(self, obstacle_list):
         '''

@@ -25,7 +25,7 @@ OBSTACLE_IMG_W_VISITED = pygame.transform.rotate(OBSTACLE_IMG_N_VISITED, -90)
 
 
 class Obstacle:
-    def __init__(self, pos: pair, dir):
+    def __init__(self, pos: pair, dir: pair):
         self.pos = pos
         self.dir = dir
         self.visited = True
@@ -44,7 +44,7 @@ class Obstacle:
         return self.visited
 
     def set_visited(self):
-        self.visited = True
+        self.visited = False
 
     def render_obstacle(self):
         x, y = self.get_pos().get()
@@ -52,13 +52,13 @@ class Obstacle:
                                      y * Constants.GRID_CELL_SIZE - 15 * Constants.UNIT)
         obs_dir = self.get_direction()
 
-        if obs_dir == Constants.N:
-            obs_img = OBSTACLE_IMG_N_VISITED if self.visited else OBSTACLE_IMG_N
-        elif obs_dir == Constants.S:
+        if obs_dir.get() == Constants.N:
             obs_img = OBSTACLE_IMG_S_VISITED if self.visited else OBSTACLE_IMG_S
-        elif obs_dir == Constants.E:
-            obs_img = OBSTACLE_IMG_E_VISITED if self.visited else OBSTACLE_IMG_E
-        else:
+        elif obs_dir.get() == Constants.S:
+            obs_img = OBSTACLE_IMG_N_VISITED if self.visited else OBSTACLE_IMG_N
+        elif obs_dir.get() == Constants.E:
             obs_img = OBSTACLE_IMG_W_VISITED if self.visited else OBSTACLE_IMG_W
+        else:
+            obs_img = OBSTACLE_IMG_E_VISITED if self.visited else OBSTACLE_IMG_E
 
         Constants.WIN.blit(obs_img, obstacle_grid_destination)

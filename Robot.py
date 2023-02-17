@@ -37,6 +37,14 @@ class Robot:
         self.window = window
         self.sim = sim
 
+        self.is_moving = False
+
+    def get_is_moving(self):
+        return self.is_moving
+
+    def set_is_moving(self, value: bool):
+        self.is_moving = value
+
     def get_angle(self):
         return self.angle
 
@@ -78,6 +86,7 @@ class Robot:
         elif initial_angle == Constants.WEST:
             target_pos = initial_pos + pair(-ONE_CELL, 0)
 
+        self.set_is_moving(True)
         while not self.is_movement_complete(target_pos):
             self.__move_a_step(-self.velocity, 0)
         self.__adjust_robot(target_pos, initial_angle)
@@ -100,6 +109,7 @@ class Robot:
         elif initial_angle == Constants.WEST:
             target_pos = initial_pos + pair(ONE_CELL, 0)
 
+        self.set_is_moving(True)
         while not self.is_movement_complete(target_pos):
             self.__move_a_step(self.velocity, 0)
         self.__adjust_robot(target_pos, initial_angle)
@@ -132,6 +142,7 @@ class Robot:
                 pair(-self.turn_radius, self.turn_radius)
             target_angle = Constants.SOUTH
 
+        self.set_is_moving(True)
         while not self.is_movement_complete(target_pos):
             self.__move_a_step(-self.velocity, 1)
 
@@ -165,6 +176,7 @@ class Robot:
                 pair(-self.turn_radius, -self.turn_radius)
             target_angle = Constants.NORTH
 
+        self.set_is_moving(True)
         while not self.is_movement_complete(target_pos):
             self.__move_a_step(-self.velocity, -1)
         self.__adjust_robot(target_pos, target_angle)
@@ -197,6 +209,7 @@ class Robot:
                 pair(self.turn_radius, self.turn_radius)
             target_angle = Constants.NORTH
 
+        self.set_is_moving(True)
         while not self.is_movement_complete(target_pos):
             self.__move_a_step(self.velocity, -1)
 
@@ -230,6 +243,7 @@ class Robot:
                 pair(self.turn_radius, -self.turn_radius)
             target_angle = Constants.SOUTH
 
+        self.set_is_moving(True)
         while not self.is_movement_complete(target_pos):
             self.__move_a_step(self.velocity, 1)
         self.__adjust_robot(target_pos, target_angle)
@@ -249,7 +263,7 @@ class Robot:
         '''
         self.set_pos(target_pos)
         self.set_angle(math.radians(target_angle))
-        self.sim.refresh_screen()
+        self.set_is_moving(False)
         self.sim.refresh_screen()
 
     def render_robot(self):

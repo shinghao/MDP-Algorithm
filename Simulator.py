@@ -6,8 +6,11 @@ import Robot
 import Panel
 import Grid
 import RobotPathRenderer
-import pathfinder
+import time
 from Pair import pair
+from griddyworld import *
+from pathfinder import naive
+import pathorder
 
 
 class Sim:
@@ -29,6 +32,8 @@ class Sim:
 
         # Initialise obstacle list
         self.obstacle_list = []
+
+        # Initialise pathfinding object
 
         # Initialise instruction list
         self.instruction_list = []
@@ -61,18 +66,19 @@ class Sim:
 
         # calculate the coordinates of each face of the obstacle
         if x < 3:
-            return Constants.E
-        elif x > 7:
             return Constants.W
+        elif x > 7:
+            return Constants.E
         elif y > 7:
-            return Constants.S
-        else:
             return Constants.N
+        else:
+            return Constants.S
 
     def change_obstacle_direction(self, new_obstacle_dir, x, y):
         for obs in self.obstacle_list:
             if obs.get_pos().get() == (x, y):
-                obs.set_direction(new_obstacle_dir)
+                obs.set_direction(
+                    pair(new_obstacle_dir[0], new_obstacle_dir[1]))
                 break
 
     def handle_obstacle_placement(self):
@@ -86,7 +92,7 @@ class Sim:
         if self.grid.get_cell_value(x, y) == 0:
             self.grid.set_cell_value(x, y, 1)
             self.obstacle_list.append(
-                Obstacle.Obstacle(pair(x, y), obstacle_dir))
+                Obstacle.Obstacle(pair(x, y), pair(obstacle_dir[0], obstacle_dir[1])))
 
         if self.grid.get_cell_value(x, y) == 1:
             self.change_obstacle_direction(obstacle_dir, x, y)
@@ -120,23 +126,64 @@ class Sim:
         self.robot = Robot.Robot(Constants.WIN, self, pair(
             Constants.ROBOT_START_X, Constants.ROBOT_START_Y))
         self.obstacle_list = []
+        self.instruction_list = []
         self.grid = Grid.Grid(Constants.WIN, Constants.GRID_NUM,
                               Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT, Constants.GRID_WIDTH, Constants.COLOR_GRID_LINE, Constants.COLOR_ROBOT_PATH)
         self.refresh_screen()
+
+    def capture_obstacle_image(self):
+        print("Capture obstacle image!")
+
+    def handle_instructions(self):
+        for instruction_one_path in self.instruction_list:
+            for instruction in instruction_one_path:
+                if instruction == "forward":
+                    self.robot.move_forward()
+                elif instruction == "back":
+                    self.robot.move_backward()
+                elif instruction == "left":
+                    self.robot.move_left_forward()
+                elif instruction == "right":
+                    self.robot.move_right_forward()
+                elif instruction == "backleft":
+                    self.robot.move_left_backward()
+                elif instruction == "backright":
+                    self.robot.move_right_backward()
+                elif instruction == "capture_obstacle_image":
+                    self.capture_obstacle_image()
+
+                # Keep looping until robot finish executing current movement
+                while (self.robot.get_is_moving()):
+                    continue
+            time.sleep(4)
+
+    def pathfinding_algo(self):
+
+        start = node(pair(1, 1), pair(0, 1))
+
+        nodes = []
+        for i in self.obstacle_list:
+            nodes.append(node(i.get_pos(), i.get_direction()))
+            print("hi", i.get_pos().get(), i.get_direction().get())
+
+        order = pathorder.greedy(nodes, start.grid.get())
+        bot = robot(start, 3)
+        for goal in order:
+            pathfound = naive(bot, goal)
+            print(pathfound.get())
+            print(pathfound.get_moves())
+            self.instruction_list.append(pathfound.get_moves())
+            start = goal
+        print("Finish pathfinding algo!")
 
     def start_pathfinding(self):
         print("Start Pathfinding!")
         self.can_place_obstacle = False
         self.can_control_robot = False
-        for instruction in self.instruction_list:
-            if instruction == "move_forward":
-                self.robot.move_forward()
-            elif instruction == "move_backward":
-                self.robot.move_backward()
-            elif instruction == "move_left_forward":
-                self.robot.move_left_forward()
-            if instruction == "move_right_forward":
-                self.robot.move_right_forward()
+        # Take in instruction list from pathfinding gen using obstacle_list
+        # Take in hamiltanion path from pathfinding gen
+        self.pathfinding_algo()
+        self.handle_instructions()
 
 
 def main():
