@@ -6,6 +6,7 @@ import Robot
 import Panel
 import Grid
 import RobotPathRenderer
+import pathfinder
 from Pair import pair
 
 
@@ -60,13 +61,13 @@ class Sim:
 
         # calculate the coordinates of each face of the obstacle
         if x < 3:
-            return Constants.EAST
+            return Constants.E
         elif x > 7:
-            return Constants.WEST
+            return Constants.W
         elif y > 7:
-            return Constants.SOUTH
+            return Constants.S
         else:
-            return Constants.NORTH
+            return Constants.N
 
     def change_obstacle_direction(self, new_obstacle_dir, x, y):
         for obs in self.obstacle_list:

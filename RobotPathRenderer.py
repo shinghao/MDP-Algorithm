@@ -13,8 +13,8 @@ class RobotPathRenderer:
 
     def render_robot_path(self):
         pos = self.robot.get_pos().get()
-        x = int(pos[0] // self.grid.get_cell_size())
-        y = int(pos[1] // self.grid.get_cell_size())
+        x = int(pos[0] // self.grid.get_cell_size()) + 1
+        y = int(pos[1] // self.grid.get_cell_size()) + 1
 
         self.grid.set_cell_value(x, y, 2)
 
@@ -23,5 +23,5 @@ class RobotPathRenderer:
             for y in range(self.grid.get_cell_count()):
                 if (self.grid.get_cell_value(x, y) == 2):
                     rect = pygame.Rect(
-                        x * self.grid.get_cell_size(), y * self.grid.get_cell_size(), Constants.ROBOT_WIDTH, Constants.ROBOT_HEIGHT)
+                        x * self.grid.get_cell_size(), y * self.grid.get_cell_size(), self.grid.get_cell_size(), self.grid.get_cell_size())
                     pygame.draw.rect(self.surface, self.robot_path_color, rect)

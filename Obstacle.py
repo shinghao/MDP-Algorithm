@@ -21,6 +21,8 @@ OBSTACLE_IMG_S_VISITED = pygame.transform.rotate(OBSTACLE_IMG_N_VISITED, 180)
 OBSTACLE_IMG_E_VISITED = pygame.transform.rotate(OBSTACLE_IMG_N_VISITED, 90)
 OBSTACLE_IMG_W_VISITED = pygame.transform.rotate(OBSTACLE_IMG_N_VISITED, -90)
 
+# Obstacle direction vectors
+
 
 class Obstacle:
     def __init__(self, pos: pair, dir):
@@ -50,11 +52,11 @@ class Obstacle:
                                      y * Constants.GRID_CELL_SIZE - 15 * Constants.UNIT)
         obs_dir = self.get_direction()
 
-        if obs_dir == Constants.NORTH:
+        if obs_dir == Constants.N:
             obs_img = OBSTACLE_IMG_N_VISITED if self.visited else OBSTACLE_IMG_N
-        elif obs_dir == Constants.SOUTH:
+        elif obs_dir == Constants.S:
             obs_img = OBSTACLE_IMG_S_VISITED if self.visited else OBSTACLE_IMG_S
-        elif obs_dir == Constants.EAST:
+        elif obs_dir == Constants.E:
             obs_img = OBSTACLE_IMG_E_VISITED if self.visited else OBSTACLE_IMG_E
         else:
             obs_img = OBSTACLE_IMG_W_VISITED if self.visited else OBSTACLE_IMG_W
