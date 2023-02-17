@@ -5,6 +5,7 @@ import Environment
 import Robot
 import Panel
 import Grid
+import RobotPathRenderer
 from Pair import pair
 
 
@@ -33,7 +34,12 @@ class Sim:
 
         # Initialise grid 2d array
         self.grid = Grid.Grid(Constants.WIN, Constants.GRID_NUM,
-                              Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT, Constants.GRID_WIDTH, Constants.COLOR_GRID_LINE)
+                              Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT, Constants.GRID_WIDTH, Constants.COLOR_GRID_LINE, Constants.COLOR_ROBOT_PATH)
+
+        # Initialise robot path renderer
+        self.robot_path_renderer = RobotPathRenderer.RobotPathRenderer(Constants.WIN,
+                                                                       self.robot, self.grid, Constants.COLOR_ROBOT_PATH)
+
         # Initialise UI panel
         self.panel = Panel.Panel(Constants.WIN)
 
@@ -43,6 +49,7 @@ class Sim:
         # Draw pygame environment onto screen - grid, obstacles, robot etc
         self.environment.render_environment(self.obstacle_list)
         self.grid.render_grid()
+        # self.robot_path_renderer.render_robot_path()
         self.robot.render_robot()
         self.panel.render_panel()
         pygame.display.update()
@@ -75,12 +82,12 @@ class Sim:
         y = pos[1] // Constants.GRID_CELL_SIZE
         obstacle_dir = self.get_obstacle_direction(pos)
 
-        if self.grid.get_cell(x, y) == 0:
-            self.grid.set_cell(x, y, 1)
+        if self.grid.get_cell_value(x, y) == 0:
+            self.grid.set_cell_value(x, y, 1)
             self.obstacle_list.append(
                 Obstacle.Obstacle(pair(x, y), obstacle_dir))
 
-        if self.grid.get_cell(x, y) == 1:
+        if self.grid.get_cell_value(x, y) == 1:
             self.change_obstacle_direction(obstacle_dir, x, y)
 
     def handle_robot_control(self, event):
@@ -92,8 +99,12 @@ class Sim:
             self.robot.move_backward()
         elif event.key == pygame.K_a:
             self.robot.move_left_forward()
-        if event.key == pygame.K_d:
+        elif event.key == pygame.K_d:
             self.robot.move_right_forward()
+        elif event.key == pygame.K_z:
+            self.robot.move_left_backward()
+        elif event.key == pygame.K_x:
+            self.robot.move_right_backward()
 
     def handle_button_press(self):
         if (self.panel.check_button_pressed() == Constants.BTN_STATE_START):
@@ -109,7 +120,7 @@ class Sim:
             Constants.ROBOT_START_X, Constants.ROBOT_START_Y))
         self.obstacle_list = []
         self.grid = Grid.Grid(Constants.WIN, Constants.GRID_NUM,
-                              Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT, Constants.GRID_WIDTH, Constants.COLOR_GRID_LINE)
+                              Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT, Constants.GRID_WIDTH, Constants.COLOR_GRID_LINE, Constants.COLOR_ROBOT_PATH)
         self.refresh_screen()
 
     def start_pathfinding(self):

@@ -169,6 +169,71 @@ class Robot:
             self.__move_a_step(-self.velocity, -1)
         self.__adjust_robot(target_pos, target_angle)
 
+    def move_left_backward(self):
+        """
+        Turns the robot forward and left based on the turning radius
+        """
+        target_pos = initial_pos = self.get_pos()
+        target_angle = initial_angle = math.degrees(self.get_angle())
+
+        # Determine target position & angle
+        if initial_angle == Constants.NORTH:
+            target_pos = initial_pos + \
+                pair(-self.turn_radius, self.turn_radius)
+            target_angle = Constants.EAST
+
+        elif initial_angle == Constants.EAST:
+            target_pos = initial_pos + \
+                pair(-self.turn_radius, -self.turn_radius)
+            target_angle = Constants.SOUTH
+
+        elif initial_angle == Constants.SOUTH:
+            target_pos = initial_pos + \
+                pair(self.turn_radius, -self.turn_radius)
+            target_angle = Constants.WEST
+
+        elif initial_angle == Constants.WEST:
+            target_pos = initial_pos + \
+                pair(self.turn_radius, self.turn_radius)
+            target_angle = Constants.NORTH
+
+        while not self.is_movement_complete(target_pos):
+            self.__move_a_step(self.velocity, -1)
+
+        self.__adjust_robot(target_pos, target_angle)
+
+    def move_right_backward(self):
+        """
+        Turns the robot forward and right based on the turning radius
+        """
+        target_pos = initial_pos = self.get_pos()
+        target_angle = initial_angle = math.degrees(self.get_angle())
+
+        # Determine target position & angle
+        if initial_angle == Constants.NORTH:
+            target_pos = initial_pos + \
+                pair(self.turn_radius, self.turn_radius)
+            target_angle = Constants.WEST
+
+        elif initial_angle == Constants.EAST:
+            target_pos = initial_pos + \
+                pair(-self.turn_radius, +self.turn_radius)
+            target_angle = Constants.NORTH
+
+        elif initial_angle == Constants.SOUTH:
+            target_pos = initial_pos + \
+                pair(-self.turn_radius, -self.turn_radius)
+            target_angle = Constants.EAST
+
+        elif initial_angle == Constants.WEST:
+            target_pos = initial_pos + \
+                pair(self.turn_radius, -self.turn_radius)
+            target_angle = Constants.SOUTH
+
+        while not self.is_movement_complete(target_pos):
+            self.__move_a_step(self.velocity, 1)
+        self.__adjust_robot(target_pos, target_angle)
+
     def __move_a_step(self, velocity, angle_direction):
         step = pair(math.sin(self.angle), math.cos(self.angle))
         step *= velocity
