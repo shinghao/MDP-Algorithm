@@ -58,13 +58,13 @@ def connect_graph(bot, visit: List[node], start: node):
 	nodes = [start] + visit
 	adjM = [[None for i in range(0, len(nodes))] for j in range(0, len(nodes))]	
 
-	# it's solving some problems twice (since we can take reverse of A-B to find B-A)
+	# it's NO LONGER solving some problems twice (since we can take reverse of A-B to find B-A)
 	i = 0
 	for edges in adjM:
 		j = 1 # we skip first index because it's just the start node
 		for edge in range(0, len(visit)):
 			bot.move(nodes[i])
-			if not nodes[i] == nodes[j]:
+			if not nodes[i] == nodes[j]: # DON'T NEED SOLUTION TO ITSELF
 				if adjM[j][i]: adjM[i][j] = adjM[j][i].reverse_path()
 				else: adjM[i][j] = astar(bot, nodes[j])
 

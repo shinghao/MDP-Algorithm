@@ -120,22 +120,22 @@ class obstacle:
 		to scan the image on the obstacle'''
 		# how to handle outofbounds?
 
-		if self.pos.direction == N:
+		if self.pos.direction.get() == N:
 			goto = self.pos.grid + pair(0,2)
 			orientation = pair(*S)
 			return node(goto, orientation)
 
-		elif self.pos.direction == S:
+		elif self.pos.direction.get() == S:
 			goto = self.pos.grid + pair(0,-2)
 			orientation = pair(*N)
 			return node(goto, orientation)
 
-		elif self.pos.direction == E:
+		elif self.pos.direction.get() == E:
 			goto = self.pos.grid + pair(2,0)
 			orientation = pair(*W)
 			return node(goto, orientation)
 
-		elif self.pos.direction == W:
+		elif self.pos.direction.get() == W:
 			goto = self.pos.grid + pair(-2,0)
 			orientation = pair(*E)
 			return node(goto, orientation)

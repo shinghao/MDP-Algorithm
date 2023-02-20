@@ -25,6 +25,8 @@ def hpath_astar(bot, nodes, start):
 
 def astar_TSP(bot, nodes, start):
 
+	print("Connecting the graphs using A-star to weigh edges")
+
 	graph = pathorder.connect_graph(bot, nodes, start)
 
 	route = pathorder.permutate(graph)
@@ -44,7 +46,9 @@ if __name__ == '__main__':
 
 	print(obstacles)
 
-	nodes = [node(pair(i[0], i [1]), pair(*(i[2]))) for i in obstacles]
+	obstacles = [obstacle(node(pair(i[0], i [1]), pair(*(i[2])))) for i in obstacles]
+	
+	nodes = [o.relative_ori() for o in obstacles]
 
 	bot = robot(start, 3)
 
