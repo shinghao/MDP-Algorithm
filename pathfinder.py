@@ -1,8 +1,68 @@
 from griddyworld import *
+from heuristics import euc_dist
+
+import heapq
+
+def costing(f):
+	if f.__name__ == 'forward' or f.__name__ == 'back':
+		return 1
+
+	else: return 6
+
+def astar(bot, goal):
+
+	print("Executing A-star algorithm for %s to %s" %(bot.pos.get(),goal.get()))
+
+	N_visited = [[None for i in range(0,GRID_X)] for j in range(0,GRID_Y)] # visited matrix for north
+	S_visited = [[None for i in range(0,GRID_X)] for j in range(0,GRID_Y)] # visited matrix for south
+	W_visited = [[None for i in range(0,GRID_X)] for j in range(0,GRID_Y)] # visited matrix for west
+	E_visited = [[None for i in range(0,GRID_X)] for j in range(0,GRID_Y)] # visited matrix for east
+
+	visited_directory = {N:N_visited, S:S_visited, E:E_visited, W:W_visited}
+
+	movements = bot.controls()
+	start = bot.pos
+	explore = list()
+
+	p = path()
+	p.add(start)
+	hcost = euc_dist(start.grid.get(), goal.grid.get())
+	p.update_hcost(hcost) # heuristic
+
+	explore.append(p) # 1 element so don't need to heapify
+	bot.move(start)
+
+	while explore:
+		p = heapq.heappop(explore)
+
+		for f in movements:
+			bot.move(p.last())
+			newnode = f()
+
+			if not bot.oob(newnode.grid) and \
+			not visited_directory[newnode.direction.get()][newnode.grid.y - 1][newnode.grid.x - 1]:
+				#print(p.get(), f.__name__)
+				new_p = path() + p # copy old path
+				new_p.add(newnode)
+				new_p.update_hcost(euc_dist(newnode.grid.get(), goal.grid.get()))
+				new_p.add_move(f)
+				new_p.add_cost(costing(f))
+				if new_p.last().get() == goal.get():
+					print("FOUND GOAL")
+					bot.move(goal)
+					return new_p
+				else:
+					visited_directory[newnode.direction.get()][newnode.grid.y - 1][newnode.grid.x - 1] = new_p
+					heapq.heappush(explore, new_p)
+
+			else: continue
+
 
 def naive(bot, goal):
-	movements = bot.controls()
+
 	print("Executing naive algorithm for %s to %s" %(bot.pos.get(),goal.get()))
+
+	movements = bot.controls()
 	start = bot.pos
 	explore = list()
 	p = path()
@@ -18,9 +78,8 @@ def naive(bot, goal):
 				if not bot.oob(newnode.grid):
 					#print(p.get())
 					new_p = path() + p # copy old path
-					new_p.moves
 					new_p.add(newnode)
-					new_p.add_move(f.__name__)
+					new_p.add_move(f)
 					if new_p.last().get() == goal.get():
 						print("FOUND GOAL")
 						bot.move(goal)
@@ -39,3 +98,27 @@ def naive(bot, goal):
 20 * 20 means 400 possible positions and 4 orientations mean 1600 possible states
 this means computation shouldn't be too bad hopefully.
 '''
+
+# TESTING #
+if __name__ == "__main__":
+	# li = list((4,2,1,5,3))
+
+	# heapq.heapify(li)
+
+	# heapq.heappush(li, 0)
+
+	# lel = heapq.heappop(li)
+
+	# print(lel)
+
+	# print(li)
+
+	start = node(pair(1,1), pair(0,1))
+
+	test = node(pair(9,8), pair(0,1))
+
+	bot = robot(start, 3)
+
+	pathfound = astar(bot, test)
+	print(pathfound.get())
+	print(pathfound.get_moves())

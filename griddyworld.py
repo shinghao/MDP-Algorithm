@@ -41,29 +41,44 @@ class path:
 	def __init__(self, nodes = None, cost = 0, moves = None):
 		self.nodes = list() # list of nodes
 		if nodes: self.nodes += nodes # populate list with argument
+
 		self.moves = list() # list of moves
 		if moves: self.moves += moves
-		self.cost = cost # cost of path
 
-	def add(self, newnode:node):
-		self.nodes.append(newnode)
-		self.cost += 1 # placeholder cost
+		self.cost = cost # cost of path or g() cost
+		self.hcost = 0 # heuristic cost - let this be 0 if there is none
 
 	def __add__(self, path2):
 		return path(self.nodes + path2.nodes, self.cost + path2.cost, self.moves + path2.moves)
+
+	def __lt__(self, path2):
+		'''use this to compare and sort paths for the heap queue'''
+		return self.cost + self.hcost < path2.cost + path2.hcost
+
+	def add(self, newnode:node):
+		self.nodes.append(newnode)
+
+	def add_cost(self, cost: int):
+		self.cost += cost
+
+	def update_hcost(self, hcost):
+		self.hcost = hcost
 	
-	def add_move(self, move: str):
-		self.moves.append(move)
+	def add_move(self, move):
+		# note that move should be a function
+		self.moves.append(move.__name__)
 
 	def get_moves(self):
 		return self.moves
 
-	def compute_cost(self):
-		pass
-
 	def print_path(self):
+		print("path taken:")
 		for n in self.nodes:
 			print(n.get())
+		print("moves used:")
+		for m in self.moves:
+			print(m)
+		print("cost:",self.cost)
 
 	def get(self):
 		return [n.get() for n in self.nodes]
@@ -81,6 +96,34 @@ class obstacle:
 			# if difference is less than 1
 			return True
 		else: return False
+
+	def relative_ori(self):
+		''' get the relative orientation the robot needs to be in
+		to scan the image on the obstacle'''
+		# how to handle outofbounds?
+
+		if self.pos.direction == N:
+			goto = self.pos.grid + pair(0,2)
+			orientation = pair(*S)
+			return node(goto, orientation)
+
+		elif self.pos.direction == S:
+			goto = self.pos.grid + pair(0,-2)
+			orientation = pair(*N)
+			return node(goto, orientation)
+
+		elif self.pos.direction == E:
+			goto = self.pos.grid + pair(2,0)
+			orientation = pair(*W)
+			return node(goto, orientation)
+
+		elif self.pos.direction == W:
+			goto = self.pos.grid + pair(-2,0)
+			orientation = pair(*E)
+			return node(goto, orientation)
+
+		else:
+			raise Exception("Obstacle orientation error - only N,S,E,W are allowed.")
 
 class robot:
 	pos = None # node type
@@ -193,6 +236,39 @@ class robot:
 
 		return False
 
+	def check_obstacle(self):
+		pass
+
+	def turning_clearance(self, movement):
+		''' movement here is the function call (use for turning only) '''
+		dest = movement() # returns destination node
+		displacement = dest.grid - self.pos.grid # how much we have moved
+
+		if displacement.x >= 0: horizontal = 1
+		else: horizontal = -1
+
+		if displacement.y >= 0: vertical = 1
+		else: vertical = -1
+
+		# cases by orientation:
+		if movement.__name__ == 'left':
+			pass
+
+		elif movement.__name__ == 'right':
+			pass
+
+		elif movement.__name__ == 'backleft':
+			pass
+ 
+		elif movement.__name__ == 'backright':
+			pass
+
+		else:
+			raise Exception("turning clearance is only for turning movements!")
+
+		# find diagonal
+
+
 def random_obstacles(n):
 
 	obstacles = list()
@@ -203,8 +279,8 @@ def random_obstacles(n):
 		new = False
 
 		while not new:
-			x = random.choice(range(1,21))
-			y = random.choice(range(1,21))
+			x = random.choice(range(1,GRID_X))
+			y = random.choice(range(1,GRID_Y))
 			z = random.choice([N,E,S,W])
 			if (x,y) not in selected:
 				selected.append((x,y))
@@ -212,3 +288,15 @@ def random_obstacles(n):
 				new = True
 	
 	return obstacles
+
+
+# TESTING #
+if __name__ == '__main__':
+	test1 = node(pair(1,1), pair(0,1))
+	test2 = node(pair(4,4), pair(1,0))
+	path1 = path([test1], 1)
+	path2 = path([test2], 6, ['right'])
+
+	path3 = path1 + path2
+
+	path3.print_path()

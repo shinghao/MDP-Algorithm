@@ -1,10 +1,12 @@
 from griddyworld import *
 
-from pathfinder import naive
+from pathfinder import naive, astar
 
 import pathorder
 
-test = node(pair(1,1), pair(1,0))
+start = node(pair(1,1), pair(0,1))
+
+test = node(pair(9,8), pair(0,1))
 
 obstacles = random_obstacles(8)
 
@@ -17,12 +19,16 @@ order = pathorder.greedy(nodes, test.grid.get())
 for g in order:
 	print (g.get())
 
-start = test
-
-bot = robot(test, 3)
+bot = robot(start, 3)
 
 for goal in order:
-	pathfound = naive(bot,goal)
+	pathfound = astar(bot,goal)
 	print(pathfound.get())
 	print(pathfound.get_moves())
 	start = goal
+
+# bot = robot(start, 3)
+
+# pathfound = astar(bot, test)
+# print(pathfound.get())
+# print(pathfound.get_moves())
