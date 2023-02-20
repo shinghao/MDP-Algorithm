@@ -9,8 +9,9 @@ import RobotPathRenderer
 import time
 from Pair import pair
 from griddyworld import *
-from pathfinder import naive
+from pathfinder import astar
 import pathorder
+from PathGenerator import PathGenerator
 
 
 class Sim:
@@ -34,6 +35,8 @@ class Sim:
         self.obstacle_list = []
 
         # Initialise pathfinding object
+
+        self.path_generator = PathGenerator()
 
         # Initialise instruction list
         self.instruction_list = []
@@ -70,9 +73,9 @@ class Sim:
         elif x > 7:
             return Constants.E
         elif y > 7:
-            return Constants.N
-        else:
             return Constants.S
+        else:
+            return Constants.N
 
     def change_obstacle_direction(self, new_obstacle_dir, x, y):
         for obs in self.obstacle_list:
@@ -87,6 +90,7 @@ class Sim:
         pos = pygame.mouse.get_pos()
         x = pos[0] // Constants.GRID_CELL_SIZE
         y = pos[1] // Constants.GRID_CELL_SIZE
+        # x, y = self.ToPygameXCoords(x), self.ToPygameYCoords(y)
         obstacle_dir = self.get_obstacle_direction(pos)
 
         if self.grid.get_cell_value(x, y) == 0:
@@ -96,6 +100,8 @@ class Sim:
 
         if self.grid.get_cell_value(x, y) == 1:
             self.change_obstacle_direction(obstacle_dir, x, y)
+
+        self.refresh_screen()
 
     def handle_robot_control(self, event):
         if not self.can_control_robot:
@@ -116,9 +122,11 @@ class Sim:
     def handle_button_press(self):
         if (self.panel.check_button_pressed() == Constants.BTN_STATE_START):
             self.start_pathfinding()
+            self.refresh_screen()
 
         elif (self.panel.check_button_pressed() == Constants.BTN_STATE_RESET):
             self.reset()
+            self.refresh_screen()
 
     def reset(self):
         self.can_place_obstacle = True
@@ -135,6 +143,8 @@ class Sim:
         print("Capture obstacle image!")
 
     def handle_instructions(self):
+        count = 0
+        obstacle_node_list = self.path_generator.get_obstacles_nodes()
         for instruction_one_path in self.instruction_list:
             for instruction in instruction_one_path:
                 if instruction == "forward":
@@ -155,26 +165,21 @@ class Sim:
                 # Keep looping until robot finish executing current movement
                 while (self.robot.get_is_moving()):
                     continue
-            time.sleep(4)
+
+            time.sleep(0.5)
+            cur_obstacle_pos = obstacle_node_list[count].get()[0]
+            for obs in self.obstacle_list:
+                print(obs.get_pygame_coord().get(), cur_obstacle_pos)
+                if obs.get_pygame_coord().get() == cur_obstacle_pos:
+                    obs.set_visited()
+                    self.refresh_screen()
+                    break
+            time.sleep(0.5)
+            count += 1
 
     def pathfinding_algo(self):
-
-        start = node(pair(1, 1), pair(0, 1))
-
-        nodes = []
-        for i in self.obstacle_list:
-            nodes.append(node(i.get_pos(), i.get_direction()))
-            print("hi", i.get_pos().get(), i.get_direction().get())
-
-        order = pathorder.greedy(nodes, start.grid.get())
-        bot = robot(start, 3)
-        for goal in order:
-            pathfound = naive(bot, goal)
-            print(pathfound.get())
-            print(pathfound.get_moves())
-            self.instruction_list.append(pathfound.get_moves())
-            start = goal
-        print("Finish pathfinding algo!")
+        self.instruction_list = self.path_generator.GeneratePath(
+            self.obstacle_list)
 
     def start_pathfinding(self):
         print("Start Pathfinding!")
@@ -209,7 +214,7 @@ def main():
                     sim.handle_obstacle_placement()
                 else:
                     sim.handle_button_press()
-                sim.refresh_screen()
+
             # Keyboard Input
             elif event.type == pygame.KEYUP:
                 # WASD -> Control robot manually
