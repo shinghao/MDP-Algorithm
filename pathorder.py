@@ -87,17 +87,20 @@ def permutate(graph):
 		index = 0 # always start from zero
 		pathcost = 0
 		route = list()
+		try: 
+			for goto in permutation:
+				pathcost += graph[index][goto].cost
+				route.append(graph[index][goto])
+				index = goto
 
-		for goto in permutation:
-			pathcost += graph[index][goto].cost
-			route.append(graph[index][goto])
-			index = goto
+			if pathcost < mincost:
+				mincost = pathcost
+				minpath = route
 
-		if pathcost < mincost:
-			mincost = pathcost
-			minpath = route
-
-		#print(pathcost)
+			#print(pathcost)
+		except:
+			print("index is %s and goto is %s" % (index, goto))
+			raise Exception("NONE TYPE ERROR")
 
 	return minpath
 

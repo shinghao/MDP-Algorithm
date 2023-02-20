@@ -121,22 +121,22 @@ class obstacle:
 		# how to handle outofbounds?
 
 		if self.pos.direction.get() == N:
-			goto = self.pos.grid + pair(0,2)
+			goto = self.pos.grid + pair(0,3)
 			orientation = pair(*S)
 			return node(goto, orientation)
 
 		elif self.pos.direction.get() == S:
-			goto = self.pos.grid + pair(0,-2)
+			goto = self.pos.grid + pair(0,-3)
 			orientation = pair(*N)
 			return node(goto, orientation)
 
 		elif self.pos.direction.get() == E:
-			goto = self.pos.grid + pair(2,0)
+			goto = self.pos.grid + pair(3,0)
 			orientation = pair(*W)
 			return node(goto, orientation)
 
 		elif self.pos.direction.get() == W:
-			goto = self.pos.grid + pair(-2,0)
+			goto = self.pos.grid + pair(-3,0)
 			orientation = pair(*E)
 			return node(goto, orientation)
 
@@ -302,8 +302,13 @@ def random_obstacles(n):
 			z = random.choice([N,E,S,W])
 			if (x,y) not in selected:
 				selected.append((x,y))
-				obstacles.append((x,y,z))
-				new = True
+				check = pair(x,y) + pair(*z)*3
+				if not 0 < check.x <= 20 or not 0 < check.y <= 20:
+					# this obstacle is illegal
+					continue
+				else:
+					obstacles.append((x,y,z))
+					new = True
 	
 	return obstacles
 

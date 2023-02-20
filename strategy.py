@@ -4,7 +4,8 @@ from pathfinder import naive, astar
 
 import pathorder
 
-def hpath_astar(bot, nodes, start):
+def hpath_astar(bot, nodes):
+	start = bot.pos
 	order = pathorder.greedy(nodes, start.grid.get())
 
 	print("Node visitation order:")
@@ -23,7 +24,9 @@ def hpath_astar(bot, nodes, start):
 
 	return route
 
-def astar_TSP(bot, nodes, start):
+def astar_TSP(bot, nodes):
+
+	start = bot.pos
 
 	print("Connecting the graphs using A-star to weigh edges")
 
@@ -54,7 +57,7 @@ if __name__ == '__main__':
 
 	#route = hpath_astar(bot, nodes, start)
 
-	route = astar_TSP(bot, nodes, start)
+	route = astar_TSP(bot, nodes)
 
 	for r in route:
 		r.print_path()
