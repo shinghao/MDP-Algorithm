@@ -28,7 +28,7 @@ class Obstacle:
     def __init__(self, pos: pair, dir: pair):
         self.pos = pos
         self.dir = dir
-        self.visited = True
+        self.visited = False
 
     def set_direction(self, dir):
         self.dir = dir
@@ -40,11 +40,17 @@ class Obstacle:
     def get_pos(self):
         return self.pos
 
+    def get_pygame_coord(self):
+        x, y = self.pos.get()
+        x = (x + 1)
+        y = (Constants.GRID_NUM - y)
+        return pair(x, y)
+
     def get_visited(self):
         return self.visited
 
     def set_visited(self):
-        self.visited = False
+        self.visited = True
 
     def render_obstacle(self):
         x, y = self.get_pos().get()
@@ -53,9 +59,9 @@ class Obstacle:
         obs_dir = self.get_direction()
 
         if obs_dir.get() == Constants.N:
-            obs_img = OBSTACLE_IMG_S_VISITED if self.visited else OBSTACLE_IMG_S
-        elif obs_dir.get() == Constants.S:
             obs_img = OBSTACLE_IMG_N_VISITED if self.visited else OBSTACLE_IMG_N
+        elif obs_dir.get() == Constants.S:
+            obs_img = OBSTACLE_IMG_S_VISITED if self.visited else OBSTACLE_IMG_S
         elif obs_dir.get() == Constants.E:
             obs_img = OBSTACLE_IMG_W_VISITED if self.visited else OBSTACLE_IMG_W
         else:
