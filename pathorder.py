@@ -14,6 +14,8 @@ import copy
 from griddyworld import *
 from typing import List
 from heuristics import euc_dist
+from pathfinder import astar
+import itertools
 
 #------------------------------------------------------ CLASSES
 
@@ -46,15 +48,58 @@ def greedy(nodes: List[node], start: tuple):
 
 	return(route)
 
-def connect_graph(nodes: List[node], start: node):
+
+# usage: pathfound = astar(bot,goal)
+
+def connect_graph(bot, visit: List[node], start: node):
 	''' nodes should be the positional nodes that the robot needs to visit in the graph '''
 	# adjacency matrix
-	
-	edges = [[0 for i in range(0, len(nodes)+1)] for j in range(0, len(nodes)+1)]
 
+	nodes = [start] + visit
+	adjM = [[None for i in range(0, len(nodes))] for j in range(0, len(nodes))]	
 
-	print(edges)
+	# it's solving some problems twice (since we can take reverse of A-B to find B-A)
+	i = 0
+	for edges in adjM:
+		j = 1 # we skip first index because it's just the start node
+		for edge in range(0, len(visit)):
+			bot.move(nodes[i])
+			if not nodes[i] == nodes[j]:
+				if adjM[j][i]: adjM[i][j] = adjM[j][i].reverse_path()
+				else: adjM[i][j] = astar(bot, nodes[j])
 
+			j+=1
+		i += 1
+
+	return adjM
+
+def permutate(graph):
+	# number of nodes to visit
+	tovisit = list(range(1, len(graph[0])))
+	permutations = list(itertools.permutations(tovisit))
+	# print(tovisit)
+	# print(permutations)
+
+	mincost = INF
+	minpath = None
+
+	for permutation in permutations:
+		index = 0 # always start from zero
+		pathcost = 0
+		route = list()
+
+		for goto in permutation:
+			pathcost += graph[index][goto].cost
+			route.append(graph[index][goto])
+			index = goto
+
+		if pathcost < mincost:
+			mincost = pathcost
+			minpath = route
+
+		#print(pathcost)
+
+	return minpath
 
 # testing #
 
@@ -62,4 +107,16 @@ if __name__ == '__main__':
 	n1,n2,n3 = node(pair(2,3), pair(0,1)), node(pair(8,8), pair(-1,0)), node(pair(17,4), pair(1,0))
 	s1 = node(pair(1,1), pair(0,1))
 	l1 = list((n1,n2,n3))
-	connect_graph(l1, s1)
+
+	bot = robot(s1, 3)
+	graph = connect_graph(bot, l1, s1)
+
+	route = permutate(graph)
+
+	print(route)
+
+	# for edges in graph:
+	# 	for edge in edges:
+	# 		if edge: print([node.get() for node in edge.nodes])
+	# 		if edge: print(edge.moves)
+	# 		if edge: print(edge.cost)

@@ -71,13 +71,31 @@ class path:
 	def get_moves(self):
 		return self.moves
 
+	def reverse_moves(self):
+		reverse = list()
+		for move in self.moves[::-1]:
+			if move == 'forward':
+				reverse.append('back')
+			elif move == 'back':
+				reverse.append('forward')
+			elif move == 'left':
+				reverse.append('backleft')
+			elif move == 'right':
+				reverse.append('backright')
+			elif move == 'backleft':
+				reverse.append('left')
+			elif move == 'backright':
+				reverse.append('right')
+			else:
+				raise Exception("instruction received in wrong format, cannot reverse.")
+		return reverse
+
+	def reverse_path(self):
+		return path(self.nodes[::-1], self.cost, self.reverse_moves())
+
 	def print_path(self):
-		print("path taken:")
-		for n in self.nodes:
-			print(n.get())
-		print("moves used:")
-		for m in self.moves:
-			print(m)
+		print("path taken:", [n.get() for n in self.nodes])
+		print("moves used:", [m for m in self.moves])
 		print("cost:",self.cost)
 
 	def get(self):
@@ -300,3 +318,5 @@ if __name__ == '__main__':
 	path3 = path1 + path2
 
 	path3.print_path()
+
+	path3.reverse_path().print_path()

@@ -14,7 +14,7 @@ print(obstacles)
 
 nodes = [node(pair(i[0], i [1]), pair(*(i[2]))) for i in obstacles]
 
-order = pathorder.greedy(nodes, test.grid.get())
+order = pathorder.greedy(nodes, start.grid.get())
 
 for g in order:
 	print (g.get())
