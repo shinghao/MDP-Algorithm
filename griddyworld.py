@@ -1,5 +1,6 @@
 import math
 import random
+from typing import List
 
 N,E,S,W = (0,1), (1,0), (0,-1), (-1,0)
 
@@ -21,8 +22,14 @@ class pair:
 	def __sub__(self, other):
 		return pair(self.x - other.x, self.y - other.y)
 
-	def __mul__(self, constant): # for direction vectors
+	def __mul__(self, constant:int): # for direction vectors
 		return pair(self.x*constant, self.y*constant)
+
+	def __rshift__(self, other):
+		return pair(self.x * other.x, self.y * other.y)
+
+	def __eq__(self, other):
+		return self.x == other.x and self.y == other.y
 
 	def get(self):
 		return self.x, self.y
@@ -109,7 +116,7 @@ class obstacle:
 		self.pos = pos # node type
 
 	def block(self, grid):
-		if abs(grid.x - self.pos.grid.x) <= 1 or \
+		if abs(grid.x - self.pos.grid.x) <= 1 and \
 			abs(grid.y - self.pos.grid.y) <= 1:
 			# if difference is less than 1
 			return True
@@ -144,15 +151,56 @@ class obstacle:
 			raise Exception("Obstacle orientation error - only N,S,E,W are allowed.")
 
 class robot:
-	pos = None # node type
-	turning = 3 # T grids to turn
 
-	def __init__(self, pos, turning):
+	def __init__(self, pos=None, turning=3):
 		self.pos = pos
 		self.turning = turning
+		# ideal case is same turning radius, use this to adjust all turning aspects
+		self.F_LEFT = pair(-turning, turning)
+		self.F_RIGHT = pair(turning, turning)
+		self.B_LEFT = pair(-turning, -turning)
+		self.B_RIGHT = pair(turning, -turning)
 
 	def move(self, new_pos):
 		self.pos = new_pos
+
+	def config_turning(F_LEFT:pair,F_RIGHT:pair,B_LEFT:pair,B_RIGHT:pair):
+		self.F_LEFT = F_LEFT
+		self.F_RIGHT = F_RIGHT
+		self.B_LEFT = B_LEFT
+		self.B_RIGHT = B_RIGHT
+
+	def perspective(self, turn):
+		''' translates turning vector into one that matches the current perspective of the robot 
+			e.g. turning left while facing north vs turning left while facing south from the same
+			grid will yield different destinations
+		'''
+
+		if self.pos.direction.get() == N:
+			if turn == 'left': return self.F_LEFT, W
+			if turn == 'right': return self.F_RIGHT, E
+			if turn == 'backleft': return self.B_LEFT, E
+			if turn == 'backright': return self.B_RIGHT, W
+
+		elif self.pos.direction.get() == S:
+			if turn == 'left': return self.F_LEFT >> pair(-1,-1), E
+			if turn == 'right': return self.F_RIGHT >> pair(-1,-1), W
+			if turn == 'backleft': return self.B_LEFT >> pair(-1,-1), W
+			if turn == 'backright': return self.B_RIGHT >> pair(-1,-1), E
+
+		elif self.pos.direction.get() == E:
+			if turn == 'left': return self.F_LEFT >> pair(-1,1), N
+			if turn == 'right': return self.F_RIGHT >> pair(1,-1), S
+			if turn == 'backleft': return self.B_LEFT >> pair(1,-1), S
+			if turn == 'backright': return self.B_RIGHT >> pair(-1,1), N
+
+		elif self.pos.direction.get() == W:
+			if turn == 'left': return self.F_LEFT >> pair(1,-1), S
+			if turn == 'right': return self.F_RIGHT >> pair(-1,1), N
+			if turn == 'backleft': return self.B_LEFT >> pair(-1,1), N
+			if turn == 'backright': return self.B_RIGHT >> pair(1,-1), S
+
+		else: raise Exception("illegal robot orientation - please only use N,S,E,W")
 
 	def forward(self, dist=1):
 		return node(self.pos.grid + self.pos.direction*dist, self.pos.direction)
@@ -161,76 +209,20 @@ class robot:
 		return node(self.pos.grid - self.pos.direction*dist, self.pos.direction)
 
 	def left(self):
-
-		T = self.turning
-
-		if self.pos.direction.get() == N:
-			return node(self.pos.grid + pair(-T,T), pair(*W))
-
-		elif self.pos.direction.get() == S:
-			return node(self.pos.grid + pair(T,-T), pair(*E))
-
-		elif self.pos.direction.get() == E:
-			return node(self.pos.grid + pair(T,T), pair(*N))
-
-		elif self.pos.direction.get() == W:
-			return node(self.pos.grid + pair(-T,-T), pair(*S))
-		else:
-			raise Exception("undefined behaviour")
+		turn, ori = self.perspective('left')
+		return node(self.pos.grid + turn, pair(*ori))
 
 	def right(self):
-
-		T = self.turning
-
-		if self.pos.direction.get() == N:
-			return node(self.pos.grid + pair(T,T), pair(*E))
-
-		elif self.pos.direction.get() == S:
-			return node(self.pos.grid + pair(-T,-T), pair(*W))
-
-		elif self.pos.direction.get() == E:
-			return node(self.pos.grid + pair(T,-T), pair(*S))
-
-		elif self.pos.direction.get() == W:
-			return node(self.pos.grid + pair(-T,T), pair(*N))
-		else:
-			raise Exception("undefined behaviour")
+		turn, ori = self.perspective('right')
+		return node(self.pos.grid + turn, pair(*ori))
 
 	def backleft(self):
-
-		T = self.turning
-
-		if self.pos.direction.get() == N:
-			return node(self.pos.grid + pair(-T,-T), pair(*E))
-
-		elif self.pos.direction.get() == S:
-			return node(self.pos.grid + pair(T,T), pair(*W))
-
-		elif self.pos.direction.get() == E:
-			return node(self.pos.grid + pair(-T,T), pair(*S))
-
-		elif self.pos.direction.get() == W:
-			return node(self.pos.grid + pair(T,-T), pair(*N))
-		else:
-			raise Exception("undefined behaviour")
+		turn, ori = self.perspective('backleft')
+		return node(self.pos.grid + turn, pair(*ori))
 
 	def backright(self):
-
-		T = self.turning
-
-		if self.pos.direction.get() == N:
-			return node(self.pos.grid + pair(T,-T), pair(*W))
-
-		elif self.pos.direction.get() == S:
-			return node(self.pos.grid + pair(-T,T), pair(*E))
-
-		elif self.pos.direction.get() == E:
-			return node(self.pos.grid + pair(-T,-T), pair(*N))
-
-		elif self.pos.direction.get() == W:
-			return node(self.pos.grid + pair(T,T), pair(*S))
-		else:
-			raise Exception("undefined behaviour")
+		turn, ori = self.perspective('backright')
+		return node(self.pos.grid + turn, pair(*ori))
 
 	def controls(self):
 		return self.forward, self.back, self.left, self.right, self.backleft, self.backright
@@ -254,12 +246,30 @@ class robot:
 
 		return False
 
-	def check_obstacle(self):
-		pass
+	def check_obstacle(self, checkthis: pair, obstacle_list: List[obstacle]):
+		#print(f"checking for obstacle at {checkthis.get()}")
 
-	def turning_clearance(self, movement):
-		''' movement here is the function call (use for turning only) '''
+		for obstacle in obstacle_list:
+			if obstacle.block(checkthis):
+				#print("obstacle detected")
+				return True
+
+		return False
+
+	def turning_clearance(self, movement, obstacle_list, mult=2):
+		''' movement here is the function call (use for turning only)
+			mult is degree of clearance, higher number means more restrictive turns but higher clearing
+			mult specifies the amount of room "above" the turning diagonal to clear'''
 		dest = movement() # returns destination node
+
+		# OFFSET helps us check the correct side of the diagonal when clearing the turn
+		if movement.__name__ in ['left', 'right']: offset = pair(1,1)
+
+		elif movement.__name__ in ['backleft', 'backright']: offset = pair(-1,-1)
+
+		else: raise Exception("invalid turning movement format, valid turning formats are left, right, backleft, backright")
+
+		#print(dest.get())
 		displacement = dest.grid - self.pos.grid # how much we have moved
 
 		if displacement.x >= 0: horizontal = 1
@@ -268,25 +278,45 @@ class robot:
 		if displacement.y >= 0: vertical = 1
 		else: vertical = -1
 
-		# cases by orientation:
-		if movement.__name__ == 'left':
-			pass
+		# therefore to move along the diagonal, we should move
+		xy = pair(horizontal, vertical)
 
-		elif movement.__name__ == 'right':
-			pass
+		# boundaries for checking
+		if self.pos.grid.x <= dest.grid.x:
+			lower_x, upper_x = self.pos.grid.x, dest.grid.x
+		else: 
+			upper_x, lower_x = self.pos.grid.x, dest.grid.x
 
-		elif movement.__name__ == 'backleft':
-			pass
- 
-		elif movement.__name__ == 'backright':
-			pass
+		if self.pos.grid.y <= dest.grid.y:
+			lower_y, upper_y = self.pos.grid.y, dest.grid.y
+		else: 
+			upper_y, lower_y = self.pos.grid.y, dest.grid.y
 
-		else:
-			raise Exception("turning clearance is only for turning movements!")
+		#print(lower_x, upper_x, lower_y, upper_y)
 
-		# find diagonal
+		checkthis = self.pos.grid
 
+		#check along diagonal and grids in the direction of the robot's current orientation (depending on mult)
+		
+		while checkthis != dest.grid:
+			# do this for every grid along the diagonal
+			# check grid above diagonal ONLY for now - previous versions too strict, can't turn
+			for i in range(0, mult+1):
+				checking = checkthis + (self.pos.direction>>offset)*i
+				if lower_x <= checking.x <= upper_x and lower_y <= checking.y <= upper_y:
+					if self.check_obstacle(checking, obstacle_list):
+						# turn is illegal
+						return False
 
+				else: continue # not in scope of check, continue.
+
+			# move along the diagonal
+			checkthis += xy
+
+		if self.check_obstacle(dest.grid, obstacle_list): return False # check if destination is clear
+
+		return True # all checks passed - turn can be made
+		
 def random_obstacles(n):
 
 	obstacles = list()
@@ -306,6 +336,12 @@ def random_obstacles(n):
 				if not 0 < check.x <= 20 or not 0 < check.y <= 20:
 					# this obstacle is illegal
 					continue
+				for a,b,c in obstacles:
+					for i in range(0,5):
+						# no new obstacle within 5 units of an obstacle's image facing direction
+						check = pair(a,b) + pair(*c)*i
+						if abs(check.x - x) <= 1 and abs(check.y - y) <= 1: continue
+
 				else:
 					obstacles.append((x,y,z))
 					new = True
@@ -325,3 +361,17 @@ if __name__ == '__main__':
 	path3.print_path()
 
 	path3.reverse_path().print_path()
+
+	start = node(pair(5,5), pair(1,0))
+
+	bot = robot(start, 4)
+
+	bot.move(bot.backleft())
+
+	print(bot.pos.get())
+
+	O1 = node(pair(6,14), pair(-1,0))
+
+	obstacle_list = [obstacle(O1)]
+
+	bot.turning_clearance(bot.backleft, obstacle_list)

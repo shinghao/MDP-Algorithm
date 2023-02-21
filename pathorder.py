@@ -51,7 +51,7 @@ def greedy(nodes: List[node], start: tuple):
 
 # usage: pathfound = astar(bot,goal)
 
-def connect_graph(bot, visit: List[node], start: node):
+def connect_graph(bot, visit: List[node], start: node, obstacles: List[obstacle]):
 	''' nodes should be the positional nodes that the robot needs to visit in the graph '''
 	# adjacency matrix
 
@@ -66,7 +66,7 @@ def connect_graph(bot, visit: List[node], start: node):
 			bot.move(nodes[i])
 			if not nodes[i] == nodes[j]: # DON'T NEED SOLUTION TO ITSELF
 				if adjM[j][i]: adjM[i][j] = adjM[j][i].reverse_path()
-				else: adjM[i][j] = astar(bot, nodes[j])
+				else: adjM[i][j] = astar(bot, nodes[j], obstacles)
 
 			j+=1
 		i += 1

@@ -9,7 +9,7 @@ def costing(f):
 
 	else: return 6
 
-def astar(bot, goal):
+def astar(bot, goal, obstacle_list):
 
 	print("Executing A-star algorithm for %s to %s" %(bot.pos.get(),goal.get()))
 
@@ -34,11 +34,23 @@ def astar(bot, goal):
 
 	while explore:
 		p = heapq.heappop(explore)
+		bot.move(p.last())
 
 		for f in movements:
-			bot.move(p.last())
+
+			if f.__name__ in ['forward', 'back']:
+				if bot.check_obstacle(f().grid, obstacle_list): continue
+
+			elif f.__name__ in ['left', 'backleft', 'right', 'backright']:
+				if not bot.turning_clearance(f, obstacle_list): continue # if not clear
+
+			else: 
+				print(f"{f.__name__} is not a valid movement")
+				raise Exception("Unexpected movement function received")
+
 			newnode = f()
 
+			# grid to visit is not out of bounds nor it has been visited (includes orientation)
 			if not bot.oob(newnode.grid) and \
 			not visited_directory[newnode.direction.get()][newnode.grid.y - 1][newnode.grid.x - 1]:
 				#print(p.get(), f.__name__)
@@ -56,6 +68,8 @@ def astar(bot, goal):
 					heapq.heappush(explore, new_p)
 
 			else: continue
+
+	print("A-STAR COULDN'T FIND PATH")
 
 
 def naive(bot, goal):
