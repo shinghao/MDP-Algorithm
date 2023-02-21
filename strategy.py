@@ -34,18 +34,26 @@ def astar_TSP(bot, nodes, obstacles):
 
 	route = pathorder.permutate(graph)
 
-	return route
+	obstacle_order = list()
+
+	for r in route:
+		goal = r.last()
+		print(goal.get())
+		o = goal.grid + (goal.direction)*3
+		obstacle_order.append(o)
+
+	return route, obstacle_order
 
 
 # TESTING #
 
 if __name__ == '__main__':
 
-	start = node(pair(1,1), pair(0,1))
+	start = node(pair(2,2), pair(0,1))
 
 	test = node(pair(9,8), pair(0,1))
 
-	obstacles = random_obstacles(8)
+	obstacles = random_obstacles(3)
 
 	print(obstacles)
 
@@ -71,7 +79,9 @@ if __name__ == '__main__':
 
 	#route = hpath_astar(bot, nodes, start)
 
-	route = astar_TSP(bot, nodes, obstacles)
+	route, obstacle_order = astar_TSP(bot, nodes, obstacles)
 
-	# for r in route:
-	# 	r.print_path()
+	for r in route:
+		r.print_path()
+
+	print([o.get() for o in obstacle_order])

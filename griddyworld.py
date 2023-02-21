@@ -229,13 +229,13 @@ class robot:
 
 	def tight_oob(self, grid):
 		''' strict out of bounds check '''
-		for i in [-1,0,1]: # use this don't want robot to go near bounds
-			if not 0 < grid.x + i <= GRID_X:
+		for i in [-1,0,1]: # use this if  don't want robot to go near bounds
+			if not (0 < grid.x + i <= GRID_X):
 				return True
-			elif not 0 < grid.y + i <= GRID_Y:
+			elif not (0 < grid.y + i <= GRID_Y):
 				return True
 
-			return False
+		return False
 
 	def oob(self, grid):
 		''' check if a grid is out of bounds '''
@@ -333,18 +333,36 @@ def random_obstacles(n):
 			if (x,y) not in selected:
 				selected.append((x,y))
 				check = pair(x,y) + pair(*z)*3
-				if not 0 < check.x <= 20 or not 0 < check.y <= 20:
+				if not 0 < check.x <= 17 or not 0 < check.y <= 17:
 					# this obstacle is illegal
 					continue
-				for a,b,c in obstacles:
-					for i in range(0,5):
-						# no new obstacle within 5 units of an obstacle's image facing direction
-						check = pair(a,b) + pair(*c)*i
-						if abs(check.x - x) <= 1 and abs(check.y - y) <= 1: continue
 
 				else:
-					obstacles.append((x,y,z))
-					new = True
+					clear = True
+					for a,b,c in obstacles:
+						
+						for i in range(0,5):
+							# no new obstacle within 5 units of an obstacle's image facing direction
+							check = pair(a,b) + pair(*c)*i
+							if abs(check.x - x) <= 1 and abs(check.y - y) <= 1:
+								clear = False
+								break
+
+						if (clear == False): break
+
+						# check that no obstacles within this new obstacle line of sight also
+						for i in range(0,5):
+							# no new obstacle within 5 units of an obstacle's image facing direction
+							check = pair(x,y) + pair(*z)*i
+							if abs(check.x - a) <= 1 and abs(check.y - b) <= 1:
+								clear = False
+								break
+
+						if (clear == False): break
+
+					if clear:
+						obstacles.append((x,y,z))
+						new = True
 	
 	return obstacles
 
