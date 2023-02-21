@@ -1,4 +1,4 @@
-from Pair import pair
+from griddyworld import pair
 import os
 import Constants
 import pygame
@@ -25,9 +25,22 @@ OBSTACLE_IMG_W_VISITED = pygame.transform.rotate(OBSTACLE_IMG_N_VISITED, -90)
 
 
 class Obstacle:
-    def __init__(self, pos: pair, dir: pair):
-        self.pos = pos
-        self.dir = dir
+    def __init__(self, pos, dir):
+        if isinstance(pos, pair):
+            self.pos = pos
+        elif isinstance(pos, tuple):
+            self.pos = pair(pos[0], pos[1])
+        else:
+            raise Exception(
+                f"Unsupported obstacle pos type - {pos} Only pair or tuple type allowed")
+        if isinstance(dir, pair):
+            self.dir = dir
+        elif isinstance(dir, tuple):
+            self.dir = pair(dir[0], dir[1])
+        else:
+            raise Exception(
+                f"Unsupported obstacle dir type - {dir} Only pair or tuple type allowed")
+
         self.visited = False
 
     def set_direction(self, dir):
@@ -42,7 +55,7 @@ class Obstacle:
 
     def get_pygame_coord(self):
         x, y = self.pos.get()
-        x = (x + 1)
+        x += 1
         y = (Constants.GRID_NUM - y)
         return pair(x, y)
 
