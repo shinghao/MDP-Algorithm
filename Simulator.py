@@ -7,11 +7,27 @@ import Panel
 import Grid
 import RobotPathRenderer
 import time
-from Pair import pair
-from griddyworld import *
+from griddyworld import pair
 from pathfinder import astar
 import pathorder
 from PathGenerator import PathGenerator
+
+
+''' Utility functions for pygame'''
+
+
+def to_pygame_coord(x, y):
+    return (x - 1, (Constants.GRID_NUM - y))
+
+
+def add_obstacles_manually(obs_list: list):
+    obstacle_list = []
+    for o in obs_list:
+        pos = to_pygame_coord(o[0], o[1])
+        dir = o[2]
+        obstacle = Obstacle.Obstacle(pos, dir)
+        obstacle_list.append(obstacle)
+    return obstacle_list
 
 
 class Sim:
@@ -32,7 +48,9 @@ class Sim:
         self.environment = Environment.Environment()
 
         # Initialise obstacle list
-        self.obstacle_list = []
+        # Add list of obstacles here if you want to manually insert obstacles for testing
+        manual_obs_list = []
+        self.obstacle_list = add_obstacles_manually(manual_obs_list)
 
         # Initialise pathfinding object
 
@@ -144,9 +162,9 @@ class Sim:
 
     def handle_instructions(self):
         count = 0
-        obstacle_node_list = self.path_generator.get_obstacles_nodes()
+        obstacle_node_list = self.path_generator.get_obstacles()
         for instruction_one_path in self.instruction_list:
-            for instruction in instruction_one_path:
+            for instruction in instruction_one_path.get_moves():
                 if instruction == "forward":
                     self.robot.move_forward()
                 elif instruction == "back":
@@ -167,7 +185,7 @@ class Sim:
                     continue
 
             time.sleep(0.5)
-            cur_obstacle_pos = obstacle_node_list[count].get()[0]
+            cur_obstacle_pos = obstacle_node_list[count].pos.get()[0]
             for obs in self.obstacle_list:
                 print(obs.get_pygame_coord().get(), cur_obstacle_pos)
                 if obs.get_pygame_coord().get() == cur_obstacle_pos:
@@ -178,7 +196,7 @@ class Sim:
             count += 1
 
     def pathfinding_algo(self):
-        self.instruction_list = self.path_generator.GeneratePath(
+        self.instruction_list = self.path_generator.generate_path(
             self.obstacle_list)
 
     def start_pathfinding(self):
