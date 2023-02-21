@@ -3,7 +3,7 @@ import pygame
 import os
 import Constants
 from Simulator import Sim
-from Pair import pair
+from griddyworld import pair
 
 ROBOT_IMG_FILE = pygame.image.load(os.path.join('Assets', 'Robot.png'))
 

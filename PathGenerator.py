@@ -1,6 +1,5 @@
-from Pair import pair
 from griddyworld import *
-from pathfinder import astar
+from strategy import astar_TSP
 import pathorder
 
 START_X, START_Y = 2, 3
@@ -9,33 +8,30 @@ START_DIR_X, START_DIR_Y = 0, 1
 
 class PathGenerator:
     def __init__(self):
-        self.obstacles_nodes = []
+        self.obstacles = []
 
-    def get_obstacles_nodes(self):
-        return self.obstacles_nodes
+    def get_obstacles(self):
+        return self.obstacles
 
-    def GeneratePath(self, obstacle_list):
+    def generate_path(self, obstacle_list):
         start = node(pair(START_X, START_Y),
                      pair(START_DIR_X, START_DIR_Y))
 
-        self.obstacles_nodes = []
+        self.obstacles = []
 
+        # Convert simulator's obstacle_list Obstacle objects into griddyworld.obstacle object
         for i in obstacle_list:
-            self.obstacles_nodes.append(
-                node(i.get_pygame_coord(), i.get_direction()))
+            self.obstacles.append(obstacle(
+                node(i.get_pygame_coord(), i.get_direction())))
 
-        order = pathorder.greedy(self.obstacles_nodes, start.grid.get())
         bot = robot(start, 3)
 
-        instruction_list = []
+        # Get target positions
+        target_pos_list = [o.relative_ori() for o in self.obstacles]
 
-        for goal in order:
-            target = obstacle(goal).relative_ori()
-            pathfound = astar(bot, target)
-            print(pathfound.get())
-            print(pathfound.get_moves())
-            instruction_list.append(pathfound.get_moves())
-            start = goal
+        instruction_list = []
+        instruction_list = astar_TSP(
+            bot, target_pos_list, self.obstacles)
 
         print("Finish pathfinding algo!")
         return instruction_list
