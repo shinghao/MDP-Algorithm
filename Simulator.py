@@ -56,7 +56,8 @@ class Sim:
 
         self.path_generator = PathGenerator()
 
-        # Initialise instruction list
+        # Initialise instruction list and obstacle order list
+        self.obstacle_list_ordered = []
         self.instruction_list = []
 
         # Initialise grid 2d array
@@ -152,6 +153,7 @@ class Sim:
         self.robot = Robot.Robot(Constants.WIN, self, pair(
             Constants.ROBOT_START_X, Constants.ROBOT_START_Y))
         self.obstacle_list = []
+        self.obstacle_list_ordered = []
         self.instruction_list = []
         self.grid = Grid.Grid(Constants.WIN, Constants.GRID_NUM,
                               Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT, Constants.GRID_WIDTH, Constants.COLOR_GRID_LINE, Constants.COLOR_ROBOT_PATH)
@@ -162,7 +164,7 @@ class Sim:
 
     def handle_instructions(self):
         count = 0
-        obstacle_node_list = self.path_generator.get_obstacles()
+        obstacle_node_list = self.obstacle_list_ordered
         for instruction_one_path in self.instruction_list:
             for instruction in instruction_one_path.get_moves():
                 if instruction == "forward":
@@ -185,9 +187,8 @@ class Sim:
                     continue
 
             time.sleep(0.5)
-            cur_obstacle_pos = obstacle_node_list[count].pos.get()[0]
+            cur_obstacle_pos = obstacle_node_list[count].get()
             for obs in self.obstacle_list:
-                print(obs.get_pygame_coord().get(), cur_obstacle_pos)
                 if obs.get_pygame_coord().get() == cur_obstacle_pos:
                     obs.set_visited()
                     self.refresh_screen()
@@ -196,8 +197,9 @@ class Sim:
             count += 1
 
     def pathfinding_algo(self):
-        self.instruction_list = self.path_generator.generate_path(
-            self.obstacle_list)
+        self.path_generator.generate_path(self.obstacle_list)
+        self.obstacle_list_ordered = self.path_generator.get_obstacles_ordered()
+        self.instruction_list = self.path_generator.get_instruction_list()
 
     def start_pathfinding(self):
         print("Start Pathfinding!")
