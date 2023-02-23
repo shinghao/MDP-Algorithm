@@ -8,30 +8,37 @@ START_DIR_X, START_DIR_Y = 0, 1
 
 class PathGenerator:
     def __init__(self):
-        self.obstacles = []
+        self.obstacle_orderd = []
+        self.instruction_list = []
 
-    def get_obstacles(self):
-        return self.obstacles
+    def get_obstacles_ordered(self):
+        return self.obstacle_orderd
 
-    def generate_path(self, obstacle_list):
+    def get_instruction_list(self):
+        return self.instruction_list
+
+    def generate_path(self, obstacle_list, is_sim):
         start = node(pair(START_X, START_Y),
                      pair(START_DIR_X, START_DIR_Y))
 
-        self.obstacles = []
-
         # Convert simulator's obstacle_list Obstacle objects into griddyworld.obstacle object
-        for i in obstacle_list:
-            self.obstacles.append(obstacle(
-                node(i.get_pygame_coord(), i.get_direction())))
+        obstacles_griddyworld = []
+        # Simulator format
+        if (is_sim):
+            for i in obstacle_list:
+                obstacles_griddyworld.append(obstacle(
+                    node(i.get_pygame_coord(), i.get_direction())))
+        else:
+            obstacles_griddyworld = [
+                obstacle(node(pair(i[0], i[1]), pair(*(i[2])))) for i in obstacle_list]
 
+        print(obstacle_list[0])
         bot = robot(start, 3)
 
         # Get target positions
-        target_pos_list = [o.relative_ori() for o in self.obstacles]
+        target_pos_list = [o.relative_ori() for o in obstacles_griddyworld]
 
-        instruction_list = []
-        instruction_list = astar_TSP(
-            bot, target_pos_list, self.obstacles)
+        self.instruction_list, self.obstacle_orderd = astar_TSP(
+            bot, target_pos_list, obstacles_griddyworld)
 
         print("Finish pathfinding algo!")
-        return instruction_list
