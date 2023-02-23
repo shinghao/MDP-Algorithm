@@ -17,16 +17,22 @@ class PathGenerator:
     def get_instruction_list(self):
         return self.instruction_list
 
-    def generate_path(self, obstacle_list):
+    def generate_path(self, obstacle_list, is_sim):
         start = node(pair(START_X, START_Y),
                      pair(START_DIR_X, START_DIR_Y))
 
         # Convert simulator's obstacle_list Obstacle objects into griddyworld.obstacle object
         obstacles_griddyworld = []
-        for i in obstacle_list:
-            obstacles_griddyworld.append(obstacle(
-                node(i.get_pygame_coord(), i.get_direction())))
+        # Simulator format
+        if (is_sim):
+            for i in obstacle_list:
+                obstacles_griddyworld.append(obstacle(
+                    node(i.get_pygame_coord(), i.get_direction())))
+        else:
+            obstacles_griddyworld = [
+                obstacle(node(pair(i[0], i[1]), pair(*(i[2])))) for i in obstacle_list]
 
+        print(obstacle_list[0])
         bot = robot(start, 3)
 
         # Get target positions
