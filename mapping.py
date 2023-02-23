@@ -31,7 +31,7 @@ def map_control(instr, rep):
 
     else:
         raise Exception(
-            "Invalid Instr type. Check instruction formatting before translating")
+            "Invalid Instruction type. Check instruction formatting before translating")
 
 
 def translate(instr_list):
@@ -63,6 +63,7 @@ def translate_instructions_to_RPI(instr_list):
     return result[:-1]  # remove last comma
 
 
+# format - "nXXYYiN"
 def translate_obstacles_from_RPI(obstacle_str: str):
     directions = {'N': Constants.N, 'S': Constants.S,
                   'E': Constants.E, 'W': Constants.W}
@@ -70,19 +71,13 @@ def translate_obstacles_from_RPI(obstacle_str: str):
     result = []
     obstacle_list = obstacle_str.split(',')
     for obstacle in obstacle_list:
-        x, y = (int)(obstacle[:2]), (int)(obstacle[2:4])
+        x, y = (int)(obstacle[1:3]), (int)(obstacle[3:5])
 
-        if obstacle[4] in directions:
-            direc = directions[obstacle[4]]
+        if obstacle[6] in directions:
+            direc = directions[obstacle[6]]
         else:
-            print("Incorrect direction format")
-
+            print("Error: Incorrect obstacle format - Direction not N, S, E, W")
+        print(x, y, direc)
         result.append((x, y, direc))
 
     return result
-
-
-if __name__ == '__main__':
-    example = ['forward', 'back', 'back', 'right',
-               'right', 'left', 'forward', 'forward', 'forward']
-    print(translate(example))
