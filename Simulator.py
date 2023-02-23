@@ -197,7 +197,7 @@ class Sim:
             count += 1
 
     def pathfinding_algo(self):
-        self.path_generator.generate_path(self.obstacle_list)
+        self.path_generator.generate_path(self.obstacle_list, is_sim=True)
         self.obstacle_list_ordered = self.path_generator.get_obstacles_ordered()
         self.instruction_list = self.path_generator.get_instruction_list()
 
