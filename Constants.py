@@ -1,5 +1,3 @@
-import pygame
-
 # Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -37,9 +35,6 @@ START_WIDTH, START_HEIGHT = 40 * UNIT, 40 * UNIT
 
 # Dimensions of Pygame window
 WIN_WIDTH, WIN_HEIGHT = 1000, GRID_HEIGHT
-
-# Pygame Window
-WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))  # Game window
 
 # DIRECTIONS
 NORTH = 0

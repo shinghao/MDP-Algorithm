@@ -32,7 +32,6 @@ class PathGenerator:
             obstacles_griddyworld = [
                 obstacle(node(pair(i[0], i[1]), pair(*(i[2])))) for i in obstacle_list]
 
-        print(obstacle_list[0])
         bot = robot(start, 3)
 
         # Get target positions
