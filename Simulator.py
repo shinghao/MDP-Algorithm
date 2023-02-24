@@ -195,7 +195,6 @@ class Sim:
             for obs in self.obstacle_list:
                 if obs.get_pygame_coord().get() == cur_obstacle_pos:
                     obs.set_visited()
-                    self.refresh_screen()
                     break
             time.sleep(0.5)
             count += 1
@@ -247,5 +246,5 @@ def main():
     pygame.quit()
 
 
-# if __name__ == "__main__":
-#    main()
+if __name__ == "__main__":
+    main()

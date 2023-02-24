@@ -19,9 +19,11 @@ def go_round_obstacle(obstacle):
 
     return target_pos[:-1]
 
+# "nq090,nx030,nc045,nx015,nz040,nw010:"
+
 
 def check_round_obstacle():
-    instruction_list = "nq090,nx030,nc045,nx015,nz045,nw030:" * 3
+    instruction_list = "nq090,nx030,nc045,nx005,nz040:" * 3
     return instruction_list[:-1]
 
 
@@ -101,5 +103,5 @@ def main():
     # print(check_round_obstacle())
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+    # main()
