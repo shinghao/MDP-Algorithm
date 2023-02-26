@@ -21,17 +21,26 @@ WIN = pygame.display.set_mode(
 
 
 def to_pygame_coord(x, y):
+    '''
+    Convert real world x,y (where 0,0 is bottom left) to pygame coordinates (where 0,0 is at top left)
+    '''
     return (x - 1, (Constants.GRID_NUM - y))
 
 
 def add_obstacles_manually(obs_list: list):
-    obstacle_list = []
+    '''
+    Convert a list of obstacle in (x,y,(direct)) format to a list of obstacle objects
+    '''
+    obstacle_list_result = []
     for o in obs_list:
         pos = to_pygame_coord(o[0], o[1])
         dir = o[2]
         obstacle = Obstacle.Obstacle(pos, dir, WIN)
-        obstacle_list.append(obstacle)
-    return obstacle_list
+        obstacle_list_result.append(obstacle)
+    return obstacle_list_result
+
+
+''' Simulator Class '''
 
 
 class Sim:
@@ -214,6 +223,9 @@ class Sim:
         self.handle_instructions()
 
 
+''' Main Function for running Simulator'''
+
+
 def main():
 
     simulator_run = True
@@ -246,5 +258,6 @@ def main():
     pygame.quit()
 
 
+''' Uncomment this to run simulator'''
 # if __name__ == "__main__":
-    # main()
+# main()
