@@ -4,24 +4,6 @@ import mapping
 from griddyworld import *
 
 
-def go_round_obstacle(obstacle):
-    x, y = (obstacle[1:3]), (obstacle[3:5])
-
-    directions = ['N', 'S', 'E', 'W']
-    index_pos = directions.index(obstacle[6])
-    new_directions = directions[index_pos:] + directions[:index_pos]
-
-    print(new_directions)
-    target_pos = ""
-
-    for d in new_directions:
-        target_pos += ("n" + x + y + d + ",")
-
-    return target_pos[:-1]
-
-# "nq090,nx030,nc045,nx015,nz040,nw010:"
-
-
 def check_round_obstacle():
     instruction_list = "nq090,nx030,nc045,nx005,nz040:" * 3
     return instruction_list[:-1]
@@ -77,16 +59,12 @@ def main():
         print(f'Received "{message}" from {addr}')
 
         # A5 - UNCOMMENT THIS ONLY FOR A5
+        # instruction_message = check_round_obstacle()
+        # Translate obstacles mnessage from string to list
+        obstacle_list = mapping.translate_obstacles_from_RPI(message)
 
-        instruction_message = check_round_obstacle()
-        # else:
-        #     # Translate obstacles mnessage from string to list
-        #     obstacle_list = mapping.translate_obstacles_from_RPI(
-        #         message)
-
-        #     # Start pathfinding, generate instructions and translate to string to send to RPI
-        #     instruction_message = generate_translated_instruction(
-        #         obstacle_list)
+        # Start pathfinding, generate instructions and translate to string to send to RPI
+        instruction_message = generate_translated_instruction(obstacle_list)
 
         # Send a response to the client
         print("sending...", instruction_message)
