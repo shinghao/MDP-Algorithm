@@ -5,6 +5,9 @@ UNIT_T = 90
 
 
 def map_control(instr, rep):
+    '''
+    Translate instruction (instr) to commands for the RPI.
+    '''
     if instr == 'forward':
         if rep < 10:
             return "nw0%s" % (UNIT_D*rep)
@@ -35,6 +38,9 @@ def map_control(instr, rep):
 
 
 def translate(instr_list):
+    '''
+    Take input a list of instructions and translate each instruction to RPI commands by calling map_control() function
+    '''
     final_instr = list()
     last = instr_list[0]
     count = 1
@@ -55,7 +61,13 @@ def translate(instr_list):
     return final_instr
 
 
+# format - "nq010,nw010:nq010,nw010" - instruction seperated by "," and each path to an obstacle seperated by ":"
 def translate_instructions_to_RPI(instr_list):
+    '''
+    Convert entire list of instruction to string format for RPI
+    Input: List of instructions already translated to RPI format
+    Return: String
+    '''
     result = ''
     for instr_to_obstacle in instr_list:
         result += ','.join(str(instr) for instr in instr_to_obstacle)
@@ -63,8 +75,11 @@ def translate_instructions_to_RPI(instr_list):
     return result[:-1]  # remove last comma
 
 
-# format - "nXXYYiN"
+# format - "nXXYYiN,nXXYYiN"
 def translate_obstacles_from_RPI(obstacle_str: str):
+    '''
+    Translate obstacles from RPI string format to a list of (x, y, direction) tuples
+    '''
     directions = {'N': Constants.N, 'S': Constants.S,
                   'E': Constants.E, 'W': Constants.W}
 
@@ -77,7 +92,6 @@ def translate_obstacles_from_RPI(obstacle_str: str):
             direc = directions[obstacle[6]]
         else:
             print("Error: Incorrect obstacle format - Direction not N, S, E, W")
-        print(x, y, direc)
         result.append((x, y, direc))
 
     return result

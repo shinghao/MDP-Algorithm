@@ -5,31 +5,51 @@ from griddyworld import *
 
 
 def check_round_obstacle():
+    '''
+    Generate a pre-determined string of instruction that will enable robot to navigate to other 3 faces of the obstacle
+    Requires the robot to already be facing and near a face of the obstacle
+    Return: String
+    '''
     instruction_list = "nq090,nx030,nc045,nx005,nz040:" * 3
     return instruction_list[:-1]
 
 
-def generate_translated_instruction(obstacle_list):
+def generate_translated_instruction(obstacle_str):
+    '''
+    Input: obstacle_str (str) message from RPI
 
-    # Generate path using algo
+    1. Translate obstacle_string from RPI message format to list of tuples
+    2. Create PathGenerator object and generate entire algo path
+    3. Get list of instructions from PathGenerator
+    4. Translate instruction list from tuple to RPI format. Store result in translated_instr_list
+    5. Convert list translated instructions into a single string for sending back to RPI
+
+    Return: instruction_str (str) message for RPI
+    '''
+    # Translate obstacle_string from RPI message format to list of tuples
+    obstacle_list = mapping.translate_obstacles_from_RPI(obstacle_str)
+
+    # Create PathGenerator object and generate entire algo path
     path_generator = PathGenerator()
     path_generator.generate_path(obstacle_list, is_sim=False)
 
     # Get list of obstacles in order of visitation
     obstacles_ordered = path_generator.get_obstacles_ordered()
 
-    # Get list of instructions
-    instruction_list = path_generator.get_instruction_list()
+    # Get list of instructions from PathGenerator
+    instr_list = path_generator.get_instruction_list()
 
-    # Translate instruction list to RPI format
-    translated_instruction_list = []
-    for instructions in instruction_list:
-        translated_instruction_list.append(
-            mapping.translate(instructions.get_moves()))
+    # Translate instruction list from tuple to RPI format. Store result in translated_instr_list
+    translated_instr_list = []
+    for instr in instr_list:
+        translated_instr_list.append(
+            mapping.translate(instr.get_moves()))
 
-    # Translate instruction list to instruction string
+    # Convert list translated instructions into a single string for sending back to RPI
     instruction_str = mapping.translate_instructions_to_RPI(
-        translated_instruction_list)
+        translated_instr_list)
+
+    # Return single instruction string
     return instruction_str
 
 
@@ -60,11 +80,9 @@ def main():
 
         # A5 - UNCOMMENT THIS ONLY FOR A5
         # instruction_message = check_round_obstacle()
-        # Translate obstacles mnessage from string to list
-        obstacle_list = mapping.translate_obstacles_from_RPI(message)
 
-        # Start pathfinding, generate instructions and translate to string to send to RPI
-        instruction_message = generate_translated_instruction(obstacle_list)
+        # Translate obstacle string, start pathfinding, generate instructions and translate instr_list string to send to RPI
+        instruction_message = generate_translated_instruction(message)
 
         # Send a response to the client
         print("sending...", instruction_message)
