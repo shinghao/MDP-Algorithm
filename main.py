@@ -81,5 +81,5 @@ def main():
     # print(check_round_obstacle())
 
 
-# if __name__ == "__main__":
-    # main()
+if __name__ == "__main__":
+    main()
