@@ -52,50 +52,53 @@ def generate_translated_instruction(obstacle_str):
         translated_instr_list)
 
     # Return single instruction string
-    return instruction_str
+    return obstacles_ordered_translated, instruction_str
 
 
 def main():
+
     # Define the address and port to listen on
-    """  
     port = 6969  # Choose a port number
 
-     # Create a TCP/IP socket and bind it to the address and port
-     # sock = socket.socket()
-     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # Create a TCP/IP socket and bind it to the address and port
+    # sock = socket.socket()
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-     sock.bind(('', port))
+    sock.bind(('', port))
 
-     # Listen for incoming connections
-     sock.listen(5)
-     print(f'Listening on {port}...')
-     conn, addr = sock.accept()
-     while True:
-         # Wait for a connection
-         print(f'Connected by {addr}')
+    # Listen for incoming connections
+    sock.listen(5)
+    print(f'Listening on {port}...')
+    conn, addr = sock.accept()
+    while True:
+        # Wait for a connection
+        print(f'Connected by {addr}')
 
-         # Receive data from the client
-         data = conn.recv(1024)
-         if not data:
-             break
-         message = data.decode()
-         print(f'Received "{message}" from {addr}')
+        # Receive data from the client
+        data = conn.recv(1024)
+        if not data:
+            break
+        message = data.decode()
+        print(f'Received "{message}" from {addr}')
 
-         # A5 - UNCOMMENT THIS ONLY FOR A5
-         # instruction_message = check_round_obstacle()
+        # A5 - UNCOMMENT THIS ONLY FOR A5
+        # instruction_message = check_round_obstacle()
 
-         # Translate obstacle string, start pathfinding, generate instructions and translate instr_list string to send to RPI
-         instruction_message = generate_translated_instruction(message)
+        # Translate obstacle string, start pathfinding, generate instructions and translate instr_list string to send to RPI
 
-         # Send a response to the client
-         print("sending...", instruction_message)
+        # Obstacle_order_msg => Ordered obstacle ID message e.g. "2, 3, 1, 4"
+        # Instruction_message => Entire instruction message for RPI
+        obstacle_order_msg, instruction_message = generate_translated_instruction(
+            message)
 
-         response = instruction_message
-         conn.sendall(response.encode())
+        # Send a response to the client
+        print("sending...", instruction_message)
 
-     conn.close()
-     sock.close() 
-     """
+        response = instruction_message
+        conn.sendall(response.encode())
+
+    conn.close()
+    sock.close()
 
     # Clean up the connection
 

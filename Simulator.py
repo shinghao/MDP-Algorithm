@@ -62,7 +62,7 @@ class Sim:
 
         # Initialise obstacle list
         # Add list of obstacles here if you want to manually insert obstacles for testing
-        manual_obs_list = []
+        manual_obs_list = [(2, 12, (1, 0)), (19, 1, (-1, 0)), (1, 6, (1, 0))]
         self.obstacle_list = add_obstacles_manually(manual_obs_list)
 
         # Initialise pathfinding object
@@ -260,4 +260,4 @@ def main():
 
 ''' Uncomment this to run simulator'''
 # if __name__ == "__main__":
-# main()
+#    main()
