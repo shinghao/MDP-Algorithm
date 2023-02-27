@@ -30,7 +30,7 @@ class PathGenerator:
                     node(i.get_pygame_coord(), i.get_direction())))
         else:
             obstacles_griddyworld = [
-                obstacle(node(pair(i[0], i[1]), pair(*(i[2])))) for i in obstacle_list]
+                obstacle(i[0], node(pair(i[1], i[2]), pair(*(i[3])))) for i in obstacle_list]
 
         bot = robot(start, 3)
 

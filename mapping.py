@@ -78,7 +78,7 @@ def translate_instructions_to_RPI(instr_list):
 # format - "nXXYYiN,nXXYYiN"
 def translate_obstacles_from_RPI(obstacle_str: str):
     '''
-    Translate obstacles from RPI string format to a list of (x, y, direction) tuples
+    Translate obstacles from RPI string format to a list of (id, x, y, direction) tuples
     '''
     directions = {'N': Constants.N, 'S': Constants.S,
                   'E': Constants.E, 'W': Constants.W}
@@ -87,11 +87,22 @@ def translate_obstacles_from_RPI(obstacle_str: str):
     obstacle_list = obstacle_str.split(',')
     for obstacle in obstacle_list:
         x, y = (int)(obstacle[1:3]), (int)(obstacle[3:5])
-
+        id = obstacle[5]
         if obstacle[6] in directions:
             direc = directions[obstacle[6]]
         else:
             print("Error: Incorrect obstacle format - Direction not N, S, E, W")
-        result.append((x, y, direc))
+        result.append((id, x, y, direc))
 
     return result
+
+
+def translate_obstacles_to_RPI(obstacle_list: list):
+    directions = {'N': Constants.N, 'S': Constants.S,
+                  'E': Constants.E, 'W': Constants.W}
+
+    result = ""
+    for obs in obstacle_list:
+        result += obs.ID + ","
+
+    return result[:-1]
