@@ -9,7 +9,9 @@ These components that make up the environment is drawn on the pygame window by c
 
 
 class Environment:
-    def __init__(self):
+    def __init__(self, surface):
+
+        self.surface = surface
 
         # Pygame Start Rectangle Box
         self.startRect = pygame.Rect(Constants.START_X, Constants.GRID_HEIGHT - (Constants.START_Y * Constants.UNIT),
@@ -25,20 +27,20 @@ class Environment:
         '''
         This function fills the Pygame window background white
         '''
-        Constants.WIN.fill(Constants.COLOR_BG)
+        self.surface.fill(Constants.COLOR_BG)
 
         # Grid background
-        pygame.draw.rect(Constants.WIN, Constants.COLOR_GRID_BG,
+        pygame.draw.rect(self.surface, Constants.COLOR_GRID_BG,
                          self.gridRect)
 
     def __draw_start_box(self):
         '''
         This function uses Pygame to draw the rectangle of the starting area
         '''
-        pygame.draw.rect(Constants.WIN, Constants.COLOR_START,
+        pygame.draw.rect(self.surface, Constants.COLOR_START,
                          self.startRect)
         start_text = self.font.render('Start', True, Constants.WHITE, None)
-        Constants.WIN.blit(start_text, self.startTextRect)
+        self.surface.blit(start_text, self.startTextRect)
 
     def __draw_obstacles(self, obstacle_list):
         '''

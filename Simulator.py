@@ -15,19 +15,32 @@ from PathGenerator import PathGenerator
 
 ''' Utility functions for pygame'''
 
+# Pygame Window
+WIN = pygame.display.set_mode(
+    (Constants.WIN_WIDTH, Constants.WIN_HEIGHT))  # Game window
+
 
 def to_pygame_coord(x, y):
+    '''
+    Convert real world x,y (where 0,0 is bottom left) to pygame coordinates (where 0,0 is at top left)
+    '''
     return (x - 1, (Constants.GRID_NUM - y))
 
 
 def add_obstacles_manually(obs_list: list):
-    obstacle_list = []
+    '''
+    Convert a list of obstacle in (x,y,(direct)) format to a list of obstacle objects
+    '''
+    obstacle_list_result = []
     for o in obs_list:
         pos = to_pygame_coord(o[0], o[1])
         dir = o[2]
-        obstacle = Obstacle.Obstacle(pos, dir)
-        obstacle_list.append(obstacle)
-    return obstacle_list
+        obstacle = Obstacle.Obstacle(pos, dir, WIN)
+        obstacle_list_result.append(obstacle)
+    return obstacle_list_result
+
+
+''' Simulator Class '''
 
 
 class Sim:
@@ -41,11 +54,11 @@ class Sim:
         self.can_control_robot = True
 
         # Initalise robot object
-        self.robot = Robot.Robot(Constants.WIN, self, pair(
+        self.robot = Robot.Robot(WIN, self, pair(
             Constants.ROBOT_START_X, Constants.ROBOT_START_Y))
 
         # Initalise Environment object
-        self.environment = Environment.Environment()
+        self.environment = Environment.Environment(WIN)
 
         # Initialise obstacle list
         # Add list of obstacles here if you want to manually insert obstacles for testing
@@ -61,15 +74,15 @@ class Sim:
         self.instruction_list = []
 
         # Initialise grid 2d array
-        self.grid = Grid.Grid(Constants.WIN, Constants.GRID_NUM,
+        self.grid = Grid.Grid(WIN, Constants.GRID_NUM,
                               Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT, Constants.GRID_WIDTH, Constants.COLOR_GRID_LINE, Constants.COLOR_ROBOT_PATH)
 
         # Initialise robot path renderer
-        self.robot_path_renderer = RobotPathRenderer.RobotPathRenderer(Constants.WIN,
+        self.robot_path_renderer = RobotPathRenderer.RobotPathRenderer(WIN,
                                                                        self.robot, self.grid, Constants.COLOR_ROBOT_PATH)
 
         # Initialise UI panel
-        self.panel = Panel.Panel(Constants.WIN)
+        self.panel = Panel.Panel(WIN)
 
         self.refresh_screen()
 
@@ -115,7 +128,7 @@ class Sim:
         if self.grid.get_cell_value(x, y) == 0:
             self.grid.set_cell_value(x, y, 1)
             self.obstacle_list.append(
-                Obstacle.Obstacle(pair(x, y), pair(obstacle_dir[0], obstacle_dir[1])))
+                Obstacle.Obstacle(pair(x, y), pair(obstacle_dir[0], obstacle_dir[1]), WIN))
 
         if self.grid.get_cell_value(x, y) == 1:
             self.change_obstacle_direction(obstacle_dir, x, y)
@@ -150,12 +163,12 @@ class Sim:
     def reset(self):
         self.can_place_obstacle = True
         self.can_control_robot = True
-        self.robot = Robot.Robot(Constants.WIN, self, pair(
+        self.robot = Robot.Robot(WIN, self, pair(
             Constants.ROBOT_START_X, Constants.ROBOT_START_Y))
         self.obstacle_list = []
         self.obstacle_list_ordered = []
         self.instruction_list = []
-        self.grid = Grid.Grid(Constants.WIN, Constants.GRID_NUM,
+        self.grid = Grid.Grid(WIN, Constants.GRID_NUM,
                               Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT, Constants.GRID_WIDTH, Constants.COLOR_GRID_LINE, Constants.COLOR_ROBOT_PATH)
         self.refresh_screen()
 
@@ -191,7 +204,6 @@ class Sim:
             for obs in self.obstacle_list:
                 if obs.get_pygame_coord().get() == cur_obstacle_pos:
                     obs.set_visited()
-                    self.refresh_screen()
                     break
             time.sleep(0.5)
             count += 1
@@ -209,6 +221,9 @@ class Sim:
         # Take in hamiltanion path from pathfinding gen
         self.pathfinding_algo()
         self.handle_instructions()
+
+
+''' Main Function for running Simulator'''
 
 
 def main():
@@ -243,5 +258,6 @@ def main():
     pygame.quit()
 
 
-if __name__ == "__main__":
-    main()
+''' Uncomment this to run simulator'''
+# if __name__ == "__main__":
+# main()

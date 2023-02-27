@@ -25,7 +25,9 @@ OBSTACLE_IMG_W_VISITED = pygame.transform.rotate(OBSTACLE_IMG_N_VISITED, -90)
 
 
 class Obstacle:
-    def __init__(self, pos, dir):
+    def __init__(self, pos, dir, surface):
+        self.surface = surface
+
         if isinstance(pos, pair):
             self.pos = pos
         elif isinstance(pos, tuple):
@@ -80,4 +82,4 @@ class Obstacle:
         else:
             obs_img = OBSTACLE_IMG_E_VISITED if self.visited else OBSTACLE_IMG_E
 
-        Constants.WIN.blit(obs_img, obstacle_grid_destination)
+        self.surface.blit(obs_img, obstacle_grid_destination)

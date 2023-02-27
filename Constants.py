@@ -1,5 +1,3 @@
-import pygame
-
 # Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -25,7 +23,7 @@ GRID_CELL_SIZE = GRID_WIDTH // GRID_NUM
 ROBOT_WIDTH, ROBOT_HEIGHT = 30 * UNIT, 30 * UNIT
 ROBOT_START_X, ROBOT_START_Y = 0, GRID_HEIGHT - 40 * UNIT
 ROBOT_START_ANGLE = 0
-ROBOT_VEL = 0.2  # Velocity - speed of robot
+ROBOT_VEL = 0.3  # Velocity - speed of robot
 ROBOT_TURN_RADIUS = 30 * UNIT
 
 # Obstacle
@@ -37,9 +35,6 @@ START_WIDTH, START_HEIGHT = 40 * UNIT, 40 * UNIT
 
 # Dimensions of Pygame window
 WIN_WIDTH, WIN_HEIGHT = 1000, GRID_HEIGHT
-
-# Pygame Window
-WIN = pygame.display.set_mode((WIN_WIDTH, WIN_HEIGHT))  # Game window
 
 # DIRECTIONS
 NORTH = 0
