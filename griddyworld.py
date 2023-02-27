@@ -112,7 +112,8 @@ class path:
 		return self.nodes[-1] # last node visited on path
 
 class obstacle:
-	def __init__(self, pos):
+	def __init__(self, ID: int, pos):
+		self.ID = ID
 		self.pos = pos # node type
 
 	def block(self, grid):
@@ -122,28 +123,28 @@ class obstacle:
 			return True
 		else: return False
 
-	def relative_ori(self):
+	def relative_ori(self, dist = 3):
 		''' get the relative orientation the robot needs to be in
 		to scan the image on the obstacle'''
 		# how to handle outofbounds?
 
 		if self.pos.direction.get() == N:
-			goto = self.pos.grid + pair(0,3)
+			goto = self.pos.grid + pair(0,dist)
 			orientation = pair(*S)
 			return node(goto, orientation)
 
 		elif self.pos.direction.get() == S:
-			goto = self.pos.grid + pair(0,-3)
+			goto = self.pos.grid + pair(0,-dist)
 			orientation = pair(*N)
 			return node(goto, orientation)
 
 		elif self.pos.direction.get() == E:
-			goto = self.pos.grid + pair(3,0)
+			goto = self.pos.grid + pair(dist,0)
 			orientation = pair(*W)
 			return node(goto, orientation)
 
 		elif self.pos.direction.get() == W:
-			goto = self.pos.grid + pair(-3,0)
+			goto = self.pos.grid + pair(-dist,0)
 			orientation = pair(*E)
 			return node(goto, orientation)
 

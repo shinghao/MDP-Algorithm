@@ -36,11 +36,16 @@ def astar_TSP(bot, nodes, obstacles):
 
 	obstacle_order = list()
 
+			
 	for r in route:
 		goal = r.last()
 		print(goal.get())
-		o = goal.grid + (goal.direction)*3
-		obstacle_order.append(o)
+		o_coords = goal.grid + (goal.direction)*3
+
+		for o in obstacles:
+			if o.pos.grid == o_coords:
+				obstacle_order.append(o)
+				break
 
 	return route, obstacle_order
 
@@ -57,13 +62,11 @@ if __name__ == '__main__':
 
 	print(obstacles)
 
-	# obstacles = [obstacle(node(pair(i[0], i [1]), pair(*(i[2])))) for i in obstacles]
-
 	# # TOY EXAMPLE #
 
 	# obstacles = [(12, 5, (0, 1)), (16, 4, (0, -1)), (15, 12, (-1, 0)), (9, 16, (0, -1)), (8, 1, (0, 1)), (6, 15, (-1, 0)), (5, 10, (1, 0)), (2, 7, (0, 1))]
 	
-	obstacles = [obstacle(node(pair(i[0], i [1]), pair(*(i[2])))) for i in obstacles]
+	obstacles = [obstacle(i+1, node(pair(v[0], v[1]), pair(*(v[2])))) for i, v in enumerate(obstacles)]
 
 	# start = node(pair(9,6), pair(0,1))
 
@@ -84,4 +87,4 @@ if __name__ == '__main__':
 	for r in route:
 		r.print_path()
 
-	print([o.get() for o in obstacle_order])
+	print([(o.ID, o.pos.get()) for o in obstacle_order])

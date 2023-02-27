@@ -30,7 +30,7 @@ def astar(bot, goal, obstacle_list):
 	p.update_hcost(hcost) # heuristic
 
 	explore.append(p) # 1 element so don't need to heapify
-	bot.move(start)
+	# bot.move(start)
 
 	while explore:
 		p = heapq.heappop(explore)
