@@ -8,8 +8,7 @@ import Grid
 import RobotPathRenderer
 import time
 from griddyworld import pair
-from pathfinder import astar
-import pathorder
+import griddyworld
 from PathGenerator import PathGenerator
 
 
@@ -62,7 +61,7 @@ class Sim:
 
         # Initialise obstacle list
         # Add list of obstacles here if you want to manually insert obstacles for testing
-        manual_obs_list = [(2, 12, (1, 0)), (19, 1, (-1, 0)), (1, 6, (1, 0))]
+        manual_obs_list = []
         self.obstacle_list = add_obstacles_manually(manual_obs_list)
 
         # Initialise pathfinding object
@@ -154,11 +153,17 @@ class Sim:
     def handle_button_press(self):
         if (self.panel.check_button_pressed() == Constants.BTN_STATE_START):
             self.start_pathfinding()
-            self.refresh_screen()
 
         elif (self.panel.check_button_pressed() == Constants.BTN_STATE_RESET):
             self.reset()
-            self.refresh_screen()
+
+        elif (self.panel.check_button_pressed() == Constants.BTN_STATE_GENOBS):
+            self.generate_random_obstacles()
+
+        else:
+            return
+
+        self.refresh_screen()
 
     def reset(self):
         self.can_place_obstacle = True
@@ -172,8 +177,10 @@ class Sim:
                               Constants.GRID_CELL_SIZE, Constants.GRID_HEIGHT, Constants.GRID_WIDTH, Constants.COLOR_GRID_LINE, Constants.COLOR_ROBOT_PATH)
         self.refresh_screen()
 
-    def capture_obstacle_image(self):
-        print("Capture obstacle image!")
+    def generate_random_obstacles(self):
+        self.reset()
+        self.obstacle_list = add_obstacles_manually(
+            griddyworld.random_obstacles(Constants.NUM_OBS_GENERATED))
 
     def handle_instructions(self):
         count = 0
@@ -192,15 +199,13 @@ class Sim:
                     self.robot.move_left_backward()
                 elif instruction == "backright":
                     self.robot.move_right_backward()
-                elif instruction == "capture_obstacle_image":
-                    self.capture_obstacle_image()
 
                 # Keep looping until robot finish executing current movement
                 while (self.robot.get_is_moving()):
                     continue
 
             time.sleep(0.5)
-            cur_obstacle_pos = obstacle_node_list[count].get()
+            cur_obstacle_pos = obstacle_node_list[count].get_xy_coord()
             for obs in self.obstacle_list:
                 if obs.get_pygame_coord().get() == cur_obstacle_pos:
                     obs.set_visited()
@@ -259,5 +264,5 @@ def main():
 
 
 ''' Uncomment this to run simulator'''
-# if __name__ == "__main__":
-#    main()
+if __name__ == "__main__":
+    main()

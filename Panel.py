@@ -13,6 +13,9 @@ class Panel(object):
         self.start_button = Button.Button(window, Constants.COLOR_BTN_START, Constants.BTN_START_X,
                                           Constants.BTN_START_Y, Constants.BTN_WIDTH, Constants.BTN_HEIGHT, "Start", Constants.BTN_FONT_SIZE, Constants.WHITE, Constants.BTN_STATE_START)
         self.buttons.append(self.start_button)
+        self.gen_obstacle_button = Button.Button(window, Constants.COLOR_BTN_GENOBS, Constants.BTN_GENOBS_X,
+                                                 Constants.BTN_GENOBS_Y, Constants.BTN_WIDTH, Constants.BTN_HEIGHT, "Random Obstacles", Constants.BTN_FONT_SIZE, Constants.WHITE, Constants.BTN_STATE_GENOBS)
+        self.buttons.append(self.gen_obstacle_button)
 
     def render_panel(self):
         for button in self.buttons:

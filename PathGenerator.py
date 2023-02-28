@@ -1,8 +1,8 @@
 from griddyworld import *
 from strategy import astar_TSP
-import pathorder
 
-START_X, START_Y = 2, 3
+START_X, START_Y = 1, 1
+SIM_START_X, SIM_START_Y = 2, 3
 START_DIR_X, START_DIR_Y = 0, 1
 
 
@@ -18,17 +18,22 @@ class PathGenerator:
         return self.instruction_list
 
     def generate_path(self, obstacle_list, is_sim):
-        start = node(pair(START_X, START_Y),
-                     pair(START_DIR_X, START_DIR_Y))
 
-        # Convert simulator's obstacle_list Obstacle objects into griddyworld.obstacle object
         obstacles_griddyworld = []
+
         # Simulator format
         if (is_sim):
+            start = node(pair(SIM_START_X, SIM_START_Y),
+                         pair(START_DIR_X, START_DIR_Y))
+            id = 1
             for i in obstacle_list:
-                obstacles_griddyworld.append(obstacle(
-                    node(i.get_pygame_coord(), i.get_direction())))
+                # Convert simulator's obstacle_list Obstacle objects into griddyworld.obstacle object
+                obstacles_griddyworld.append(obstacle(id,
+                                                      node(i.get_pygame_coord(), i.get_direction())))
+                id += 1
         else:
+            start = node(pair(START_X, START_Y),
+                         pair(START_DIR_X, START_DIR_Y))
             obstacles_griddyworld = [
                 obstacle(i[0], node(pair(i[1], i[2]), pair(*(i[3])))) for i in obstacle_list]
 
