@@ -107,4 +107,4 @@ def translate_obstacles_to_RPI(obstacle_list: list):
     for obs in obstacle_list:
         result += obs.ID + ","
 
-    return result[:-1]
+    return result

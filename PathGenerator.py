@@ -1,7 +1,7 @@
 from griddyworld import *
 from strategy import astar_TSP
 
-START_X, START_Y = 1, 1
+START_X, START_Y = 2, 2
 SIM_START_X, SIM_START_Y = 2, 3
 START_DIR_X, START_DIR_Y = 0, 1
 
@@ -37,7 +37,8 @@ class PathGenerator:
             obstacles_griddyworld = [
                 obstacle(i[0], node(pair(i[1], i[2]), pair(*(i[3])))) for i in obstacle_list]
 
-        bot = robot(start, 3)
+        bot = robot(start, F_LEFT=pair(*F_LEFT), F_RIGHT=pair(*F_RIGHT),
+                    B_LEFT=pair(*B_LEFT), B_RIGHT=pair(*B_RIGHT))
 
         # Get target positions
         target_pos_list = [o.relative_ori() for o in obstacles_griddyworld]

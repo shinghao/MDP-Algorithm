@@ -52,7 +52,7 @@ def generate_translated_instruction(obstacle_str):
         translated_instr_list)
 
     # Return single instruction string
-    return obstacles_ordered_translated, instruction_str
+    return obstacles_ordered_translated + instruction_str
 
 
 def main():
@@ -85,10 +85,7 @@ def main():
         # instruction_message = check_round_obstacle()
 
         # Translate obstacle string, start pathfinding, generate instructions and translate instr_list string to send to RPI
-
-        # Obstacle_order_msg => Ordered obstacle ID message e.g. "2, 3, 1, 4"
-        # Instruction_message => Entire instruction message for RPI
-        obstacle_order_msg, instruction_message = generate_translated_instruction(
+        instruction_message = generate_translated_instruction(
             message)
 
         # Send a response to the client
@@ -102,7 +99,7 @@ def main():
 
     # Clean up the connection
 
-    # test = (generate_translated_instruction("n10102W,n15151W"))
+    # test = (generate_translated_instruction("n03161S"))
     # print(test)
 
 
