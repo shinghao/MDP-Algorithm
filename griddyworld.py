@@ -236,9 +236,9 @@ class robot:
             if turn == 'left':
                 return (self.F_LEFT >> pair(-1, 1)).flip(), N
             if turn == 'right':
-                return (self.F_RIGHT >> pair(1, -1)).flip(), S
+                return (self.F_RIGHT >> pair(-1, 1)).flip(), S
             if turn == 'backleft':
-                return (self.B_LEFT >> pair(1, -1)).flip(), S
+                return (self.B_LEFT >> pair(-1, 1)).flip(), S
             if turn == 'backright':
                 return (self.B_RIGHT >> pair(-1, 1)).flip(), N
 
@@ -246,9 +246,9 @@ class robot:
             if turn == 'left':
                 return (self.F_LEFT >> pair(1, -1)).flip(), S
             if turn == 'right':
-                return (self.F_RIGHT >> pair(-1, 1)).flip(), N
+                return (self.F_RIGHT >> pair(1, -1)).flip(), N
             if turn == 'backleft':
-                return (self.B_LEFT >> pair(-1, 1)).flip(), N
+                return (self.B_LEFT >> pair(1, -1)).flip(), N
             if turn == 'backright':
                 return (self.B_RIGHT >> pair(1, -1)).flip(), S
 
@@ -352,7 +352,7 @@ class robot:
     		current += offset1
     		# print(f"Checking {current.get()} for obstacles")
     		if self.check_obstacle(current, obstacles): return False # turning cannot be done
-    		print("Clear.")
+    		#print("Clear.")
 
     	# CHECK THE OFF-ANGLE DURING THE TURN:
     	# print(f"Checking {(current-offset1+offset2).get()} for obstacles")
