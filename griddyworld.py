@@ -14,9 +14,9 @@ GRID_X, GRID_Y = GRID_NUM, GRID_NUM
 # self.B_RIGHT = pair(turning, -turning)
 
 F_LEFT = (-4, 2)
-B_LEFT = (-4, -2)
+B_LEFT = (-2, -4)
 F_RIGHT = (5, 3)
-B_RIGHT = (5, -3)
+B_RIGHT = (3, -5)
 
 
 class pair:
