@@ -1,7 +1,7 @@
 from typing import List
 from Constants import N, E, S, W, GRID_NUM
 
-START = (1, 1)
+START = (2,2)
 
 O1 = (4, 4)
 
