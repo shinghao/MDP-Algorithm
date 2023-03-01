@@ -42,7 +42,7 @@ def astar(bot, goal, obstacle_list):
 				if bot.check_obstacle(f().grid, obstacle_list): continue
 
 			elif f.__name__ in ['left', 'backleft', 'right', 'backright']:
-				if not bot.turning_clearance(f, obstacle_list): continue # if not clear
+				if not bot.turning_clear(f, obstacle_list): continue # if not clear
 
 			else: 
 				print(f"{f.__name__} is not a valid movement")

@@ -7,6 +7,17 @@ O1 = (4, 4)
 
 GRID_X, GRID_Y = GRID_NUM, GRID_NUM
 
+# ROBOT ACTUAL HARDWARE CONFIGURATION #
+# self.F_LEFT = pair(-turning, turning)
+# self.F_RIGHT = pair(turning, turning)
+# self.B_LEFT = pair(-turning, -turning)
+# self.B_RIGHT = pair(turning, -turning)
+
+F_LEFT = (-4, 2)
+B_LEFT = (-4, -2)
+F_RIGHT = (5, 3)
+B_RIGHT = (5, -3)
+
 
 class pair:
 
@@ -31,6 +42,9 @@ class pair:
 
     def get(self):
         return self.x, self.y
+
+    def flip(self):
+    	return pair(self.y, self.x)
 
 
 class node:
@@ -169,19 +183,25 @@ class obstacle:
 
 class robot:
 
-    def __init__(self, pos=None, turning=3):
+    def __init__(self, pos:node = None, F_LEFT:pair = None, F_RIGHT:pair = None, B_LEFT:pair = None, B_RIGHT:pair = None, turning=3):
         self.pos = pos
-        self.turning = turning
+
         # ideal case is same turning radius, use this to adjust all turning aspects
-        self.F_LEFT = pair(-turning, turning)
-        self.F_RIGHT = pair(turning, turning)
-        self.B_LEFT = pair(-turning, -turning)
-        self.B_RIGHT = pair(turning, -turning)
+        if F_LEFT and F_RIGHT and B_LEFT and B_RIGHT:
+        	self.F_LEFT = F_LEFT
+	        self.F_RIGHT = F_RIGHT
+	        self.B_LEFT = B_LEFT
+	        self.B_RIGHT = B_RIGHT
+        else:
+	        self.F_LEFT = pair(-turning, turning)
+	        self.F_RIGHT = pair(turning, turning)
+	        self.B_LEFT = pair(-turning, -turning)
+	        self.B_RIGHT = pair(turning, -turning)
 
     def move(self, new_pos):
         self.pos = new_pos
 
-    def config_turning(self, F_LEFT: pair, F_RIGHT: pair, B_LEFT: pair, B_RIGHT: pair):
+    def config_turning(self, F_LEFT : pair, F_RIGHT: pair, B_LEFT: pair, B_RIGHT: pair):
         self.F_LEFT = F_LEFT
         self.F_RIGHT = F_RIGHT
         self.B_LEFT = B_LEFT
@@ -189,8 +209,7 @@ class robot:
 
     def perspective(self, turn):
         ''' translates turning vector into one that matches the current perspective of the robot
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        e.g. turning left while facing north vs turning left while facing south from the same
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        grid will yield different destinations
+			e.g. turning left while facing north vs turning left while facing south from the same                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   grid will yield different destinations
         '''
 
         if self.pos.direction.get() == N:
@@ -215,23 +234,23 @@ class robot:
 
         elif self.pos.direction.get() == E:
             if turn == 'left':
-                return self.F_LEFT >> pair(-1, 1), N
+                return (self.F_LEFT >> pair(-1, 1)).flip(), N
             if turn == 'right':
-                return self.F_RIGHT >> pair(1, -1), S
+                return (self.F_RIGHT >> pair(1, -1)).flip(), S
             if turn == 'backleft':
-                return self.B_LEFT >> pair(1, -1), S
+                return (self.B_LEFT >> pair(1, -1)).flip(), S
             if turn == 'backright':
-                return self.B_RIGHT >> pair(-1, 1), N
+                return (self.B_RIGHT >> pair(-1, 1)).flip(), N
 
         elif self.pos.direction.get() == W:
             if turn == 'left':
-                return self.F_LEFT >> pair(1, -1), S
+                return (self.F_LEFT >> pair(1, -1)).flip(), S
             if turn == 'right':
-                return self.F_RIGHT >> pair(-1, 1), N
+                return (self.F_RIGHT >> pair(-1, 1)).flip(), N
             if turn == 'backleft':
-                return self.B_LEFT >> pair(-1, 1), N
+                return (self.B_LEFT >> pair(-1, 1)).flip(), N
             if turn == 'backright':
-                return self.B_RIGHT >> pair(1, -1), S
+                return (self.B_RIGHT >> pair(1, -1)).flip(), S
 
         else:
             raise Exception(
@@ -281,86 +300,140 @@ class robot:
 
         return False
 
-    def check_obstacle(self, checkthis: pair, obstacle_list: List[obstacle]):
+    def check_obstacle(self, checkthis: pair, obstacles: List[obstacle]):
         # print(f"checking for obstacle at {checkthis.get()}")
 
-        for obstacle in obstacle_list:
-            if obstacle.block(checkthis):
+        for o in obstacles:
+            if o.block(checkthis):
                 # print("obstacle detected")
                 return True
 
         return False
 
-    def turning_clearance(self, movement, obstacle_list, mult=2):
-        ''' movement here is the function call (use for turning only)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        mult is degree of clearance, higher number means more restrictive turns but higher clearing
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        mult specifies the amount of room "above" the turning diagonal to clear'''
-        dest = movement()  # returns destination node
+    def turning_clear(self, movement, obstacles):
+    	dest = movement()
+    	if movement.__name__ == 'left':
+    		turn, ori  = self.perspective('left')
+    	elif movement.__name__ == 'right':
+    		turn, ori  = self.perspective('right')
+    	elif movement.__name__ == 'backleft':
+    		turn, ori  = self.perspective('backleft')
+    	elif movement.__name__ == 'backright':
+    		turn, ori  = self.perspective('backright')
+    	else: raise Exception("illegal move found while checking turn: %s" % movement.__name__)
 
-        # OFFSET helps us check the correct side of the diagonal when clearing the turn
-        if movement.__name__ in ['left', 'right']:
-            offset = pair(1, 1)
+    	print(turn.get(), ori)
 
-        elif movement.__name__ in ['backleft', 'backright']:
-            offset = pair(-1, -1)
+    	# IF ORIENTATION IS N,S : CHECK ALONG Y AXIS THEN X; ELSE CHECK X THEN Y
 
-        else:
-            raise Exception(
-                "invalid turning movement format, valid turning formats are left, right, backleft, backright")
+    	if self.pos.direction.get() in [N,S]:
+    		vertical,horizontal = turn.y, turn.x
+    		if vertical >= 0: offset1 = pair(0,1)
+    		else: offset1 = pair(0, -1)
+    		if horizontal >= 0: offset2 = pair(1,0)
+    		else: offset2 = pair(-1, 0)
 
-        # print(dest.get())
-        displacement = dest.grid - self.pos.grid  # how much we have moved
+    	elif self.pos.direction.get() in [E,W]:
+    		vertical, horizontal = turn.x, turn.y
+    		if vertical >= 0: offset1 = pair(1,0)
+    		else: offset1 = pair(-1,0)
+    		if horizontal >= 0: offset2 = pair(0,1)
+    		else: offset2 = pair(0,-1)
 
-        if displacement.x >= 0:
-            horizontal = 1
-        else:
-            horizontal = -1
+    	else: raise Exception("robot found in illegal orientation: %s" % self.pos.direction)
 
-        if displacement.y >= 0:
-            vertical = 1
-        else:
-            vertical = -1
+    	print(vertical, horizontal, offset1.get(), offset2.get())
 
-        # therefore to move along the diagonal, we should move
-        xy = pair(horizontal, vertical)
+    	# DO OBSTACLE 3X3 CHECK FOR EVERY GRID TRAVELED HORIZONTALLY AND VERTICALLY (DOESN'T ACCOUNT FOR DIAGONAL)
 
-        # boundaries for checking
-        if self.pos.grid.x <= dest.grid.x:
-            lower_x, upper_x = self.pos.grid.x, dest.grid.x
-        else:
-            upper_x, lower_x = self.pos.grid.x, dest.grid.x
+    	current = self.pos.grid # remember location to simulate movement
 
-        if self.pos.grid.y <= dest.grid.y:
-            lower_y, upper_y = self.pos.grid.y, dest.grid.y
-        else:
-            upper_y, lower_y = self.pos.grid.y, dest.grid.y
+    	for i in range(1, abs(vertical+1)):
+    		current += offset1
+    		print(f"Checking {current.get()} for obstacles")
+    		if self.check_obstacle(current, obstacles): return False # turning cannot be done
+    		print("Clear.")
 
-        # print(lower_x, upper_x, lower_y, upper_y)
+    	for j in range(1, abs(horizontal+1)):
+    		current += offset2
+    		print(f"Checking {current.get()} for obstacles")
+    		if self.check_obstacle(current, obstacles): return False # turning cannot be done
+    		print("Clear.")
 
-        checkthis = self.pos.grid
+    	return True # above checks pass, turning can be made
 
-        # check along diagonal and grids in the direction of the robot's current orientation (depending on mult)
+    ### THIS IS ONLY USABLE IF TURNING IS SYMMETRIC (I.E. SAME X AND Y TRAVELED ON TURNS) ###
+    # def turning_clearance(self, movement, obstacle_list, mult=2):
+    #     ''' movement here is the function call (use for turning only)
+    #     mult is degree of clearance, higher number means more restrictive turns but higher clearing
+    #     mult specifies the amount of room "above" the turning diagonal to clear'''
 
-        while checkthis != dest.grid:
-            # do this for every grid along the diagonal
-            # check grid above diagonal ONLY for now - previous versions too strict, can't turn
-            for i in range(0, mult+1):
-                checking = checkthis + (self.pos.direction >> offset)*i
-                if lower_x <= checking.x <= upper_x and lower_y <= checking.y <= upper_y:
-                    if self.check_obstacle(checking, obstacle_list):
-                        # turn is illegal
-                        return False
+    #     dest = movement()  # returns destination node
 
-                else:
-                    continue  # not in scope of check, continue.
+    #     # OFFSET helps us check the correct side of the diagonal when clearing the turn
+    #     if movement.__name__ in ['left', 'right']:
+    #         offset = pair(1, 1)
 
-            # move along the diagonal
-            checkthis += xy
+    #     elif movement.__name__ in ['backleft', 'backright']:
+    #         offset = pair(-1, -1)
 
-        if self.check_obstacle(dest.grid, obstacle_list):
-            return False  # check if destination is clear
+    #     else:
+    #         raise Exception(
+    #             "invalid turning movement format, valid turning formats are left, right, backleft, backright")
 
-        return True  # all checks passed - turn can be made
+    #     # print(dest.get())
+    #     displacement = dest.grid - self.pos.grid  # how much we have moved
+
+    #     if displacement.x >= 0:
+    #         horizontal = 1
+    #     else:
+    #         horizontal = -1
+
+    #     if displacement.y >= 0:
+    #         vertical = 1
+    #     else:
+    #         vertical = -1
+
+    #     # therefore to move along the diagonal, we should move
+    #     xy = pair(horizontal, vertical)
+
+    #     # boundaries for checking
+    #     if self.pos.grid.x <= dest.grid.x:
+    #         lower_x, upper_x = self.pos.grid.x, dest.grid.x
+    #     else:
+    #         upper_x, lower_x = self.pos.grid.x, dest.grid.x
+
+    #     if self.pos.grid.y <= dest.grid.y:
+    #         lower_y, upper_y = self.pos.grid.y, dest.grid.y
+    #     else:
+    #         upper_y, lower_y = self.pos.grid.y, dest.grid.y
+
+    #     # print(lower_x, upper_x, lower_y, upper_y)
+
+    #     checkthis = self.pos.grid
+
+    #     # check along diagonal and grids in the direction of the robot's current orientation (depending on mult)
+
+    #     while checkthis != dest.grid:
+    #         # do this for every grid along the diagonal
+    #         # check grid above diagonal ONLY for now - previous versions too strict, can't turn
+    #         for i in range(0, mult+1):
+    #             checking = checkthis + (self.pos.direction >> offset)*i
+    #             if lower_x <= checking.x <= upper_x and lower_y <= checking.y <= upper_y:
+    #                 if self.check_obstacle(checking, obstacle_list):
+    #                     # turn is illegal
+    #                     return False
+
+    #             else:
+    #                 continue  # not in scope of check, continue.
+
+    #         # move along the diagonal
+    #         checkthis += xy
+
+    #     if self.check_obstacle(dest.grid, obstacle_list):
+    #         return False  # check if destination is clear
+
+    #     return True  # all checks passed - turn can be made
 
 
 # TESTING #
@@ -371,22 +444,26 @@ if __name__ == '__main__':
     path1 = path([test1], 1)
     path2 = path([test2], 6, ['right'])
 
-    path3 = path1 + path2
+    # path3 = path1 + path2
 
-    path3.print_path()
+    # path3.print_path()
 
-    path3.reverse_path().print_path()
+    # path3.reverse_path().print_path()
 
     start = node(pair(5, 5), pair(1, 0))
 
-    bot = robot(start, 4)
+    bot = robot(start, F_LEFT = pair(*F_LEFT), F_RIGHT = pair(*F_RIGHT), B_LEFT = pair(*B_LEFT), B_RIGHT = pair(*B_RIGHT))
 
-    bot.move(bot.backleft())
+    #bot.move(bot.backleft())
 
     print(bot.pos.get())
 
-    O1 = node(pair(6, 14), pair(-1, 0))
+    O1 = node(pair(8,7), pair(-1, 0))
 
-    obstacle_list = [obstacle(O1)]
+    obstacle_list = [obstacle(1, O1)]
 
-    bot.turning_clearance(bot.backleft, obstacle_list)
+    # print(bot.right().get())
+
+    print(bot.turning_clear(bot.left, obstacle_list))
+
+    #bot.turning_clearance(bot.backleft, obstacle_list)
