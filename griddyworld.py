@@ -322,7 +322,7 @@ class robot:
     		turn, ori  = self.perspective('backright')
     	else: raise Exception("illegal move found while checking turn: %s" % movement.__name__)
 
-    	print(turn.get(), ori)
+    	# print(turn.get(), ori)
 
     	# IF ORIENTATION IS N,S : CHECK ALONG Y AXIS THEN X; ELSE CHECK X THEN Y
 
@@ -336,29 +336,34 @@ class robot:
     	elif self.pos.direction.get() in [E,W]:
     		vertical, horizontal = turn.x, turn.y
     		if vertical >= 0: offset1 = pair(1,0)
-    		else: offset1 = pair(-1,0)
+    		else: offset1 = pair(-1, 0)
     		if horizontal >= 0: offset2 = pair(0,1)
-    		else: offset2 = pair(0,-1)
+    		else: offset2 = pair(0, -1)
 
     	else: raise Exception("robot found in illegal orientation: %s" % self.pos.direction)
 
-    	print(vertical, horizontal, offset1.get(), offset2.get())
+    	# print(vertical, horizontal, offset1.get(), offset2.get())
 
     	# DO OBSTACLE 3X3 CHECK FOR EVERY GRID TRAVELED HORIZONTALLY AND VERTICALLY (DOESN'T ACCOUNT FOR DIAGONAL)
 
     	current = self.pos.grid # remember location to simulate movement
 
-    	for i in range(1, abs(vertical+1)):
+    	for i in range(1, abs(vertical)+1):
     		current += offset1
-    		print(f"Checking {current.get()} for obstacles")
+    		# print(f"Checking {current.get()} for obstacles")
     		if self.check_obstacle(current, obstacles): return False # turning cannot be done
     		print("Clear.")
 
-    	for j in range(1, abs(horizontal+1)):
+    	# CHECK THE OFF-ANGLE DURING THE TURN:
+    	# print(f"Checking {(current-offset1+offset2).get()} for obstacles")
+    	if self.check_obstacle(current-offset1+offset2, obstacles): return False # turning cannot be done
+    	# print("Clear.")
+
+    	for j in range(1, abs(horizontal)+1):
     		current += offset2
-    		print(f"Checking {current.get()} for obstacles")
+    		# print(f"Checking {current.get()} for obstacles")
     		if self.check_obstacle(current, obstacles): return False # turning cannot be done
-    		print("Clear.")
+    		# print("Clear.")
 
     	return True # above checks pass, turning can be made
 
@@ -450,7 +455,7 @@ if __name__ == '__main__':
 
     # path3.reverse_path().print_path()
 
-    start = node(pair(5, 5), pair(1, 0))
+    start = node(pair(5, 5), pair(1,0))
 
     bot = robot(start, F_LEFT = pair(*F_LEFT), F_RIGHT = pair(*F_RIGHT), B_LEFT = pair(*B_LEFT), B_RIGHT = pair(*B_RIGHT))
 
@@ -464,6 +469,6 @@ if __name__ == '__main__':
 
     # print(bot.right().get())
 
-    print(bot.turning_clear(bot.left, obstacle_list))
+    print(bot.turning_clear(bot.backright, obstacle_list))
 
     #bot.turning_clearance(bot.backleft, obstacle_list)
