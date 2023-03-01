@@ -4,10 +4,13 @@ from heuristics import euc_dist
 import heapq
 
 def costing(f):
-	if f.__name__ == 'forward' or f.__name__ == 'back':
-		return 1
+	if f.__name__ == 'left' or f.__name__ == 'backleft':
+		return 6
 
-	else: return 6
+	elif f.__name__ == 'right' or f.__name__ == 'backright':
+		return 8
+
+	else: return 1
 
 def astar(bot, goal, obstacle_list):
 
