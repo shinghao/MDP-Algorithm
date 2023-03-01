@@ -1,7 +1,9 @@
 import Constants
 
 UNIT_D = 10
-UNIT_T = 90
+UNIT_T_L = 87
+UNIT_T_R = 88
+CALIBRATION = 3
 
 
 def map_control(instr, rep):
@@ -21,16 +23,16 @@ def map_control(instr, rep):
             return "nx%s" % (UNIT_D*rep)
 
     elif instr == 'left':
-        return "nq0%s" % (UNIT_T)
+        return "nq0%s,nw00%s" % (UNIT_T_L, CALIBRATION)
 
     elif instr == 'right':
-        return "ne0%s" % (UNIT_T)
+        return "ne0%s,nw00%s" % (UNIT_T_R, CALIBRATION)
 
     elif instr == 'backleft':
-        return "nz0%s" % (UNIT_T)
+        return "nx00%s,nz0%s" % (CALIBRATION, UNIT_T_L)
 
     elif instr == 'backright':
-        return "nc0%s" % (UNIT_T)
+        return "nx00%s,nc0%s" % (CALIBRATION, UNIT_T_R)
 
     else:
         raise Exception(
