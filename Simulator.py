@@ -10,6 +10,7 @@ import time
 from griddyworld import pair
 import griddyworld
 from PathGenerator import PathGenerator
+import mapping
 
 
 ''' Utility functions for pygame'''
@@ -61,7 +62,7 @@ class Sim:
 
         # Initialise obstacle list
         # Add list of obstacles here if you want to manually insert obstacles for testing
-        manual_obs_list = []
+        manual_obs_list = [(4, 10, Constants.N), (14, 6, (Constants.W))]
         self.obstacle_list = add_obstacles_manually(manual_obs_list)
 
         # Initialise pathfinding object
@@ -217,6 +218,15 @@ class Sim:
         self.path_generator.generate_path(self.obstacle_list, is_sim=True)
         self.obstacle_list_ordered = self.path_generator.get_obstacles_ordered()
         self.instruction_list = self.path_generator.get_instruction_list()
+        translated_instr_list = []
+        for instr in self.instruction_list:
+            translated_instr_list.append(
+                mapping.translate(instr.get_moves()))
+
+        # Convert list translated instructions into a single string for sending back to RPI
+        instruction_str = mapping.translate_instructions_to_RPI(
+            translated_instr_list)
+        print(instruction_str)
 
     def start_pathfinding(self):
         print("Start Pathfinding!")

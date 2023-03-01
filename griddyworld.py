@@ -1,14 +1,11 @@
-import math
-import random
 from typing import List
-
-N, E, S, W = (0, 1), (1, 0), (0, -1), (-1, 0)
+from Constants import N, E, S, W, GRID_NUM
 
 START = (1, 1)
 
 O1 = (4, 4)
 
-GRID_X, GRID_Y = 20, 20
+GRID_X, GRID_Y = GRID_NUM, GRID_NUM
 
 
 class pair:
@@ -192,8 +189,8 @@ class robot:
 
     def perspective(self, turn):
         ''' translates turning vector into one that matches the current perspective of the robot
-                                                                                                                                                                                                                                                                        e.g. turning left while facing north vs turning left while facing south from the same
-                                                                                                                                                                                                                                                                        grid will yield different destinations
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        e.g. turning left while facing north vs turning left while facing south from the same
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        grid will yield different destinations
         '''
 
         if self.pos.direction.get() == N:
@@ -296,8 +293,8 @@ class robot:
 
     def turning_clearance(self, movement, obstacle_list, mult=2):
         ''' movement here is the function call (use for turning only)
-                                                                                                                                                                                                                                                                        mult is degree of clearance, higher number means more restrictive turns but higher clearing
-                                                                                                                                                                                                                                                                        mult specifies the amount of room "above" the turning diagonal to clear'''
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        mult is degree of clearance, higher number means more restrictive turns but higher clearing
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        mult specifies the amount of room "above" the turning diagonal to clear'''
         dest = movement()  # returns destination node
 
         # OFFSET helps us check the correct side of the diagonal when clearing the turn
@@ -366,140 +363,30 @@ class robot:
         return True  # all checks passed - turn can be made
 
 
-""" def random_obstacles(n):
-
-	obstacles = list()
-	selected = list()
-
-	for i in range(0, n):
-
-		new = False
-
-		while not new:
-			x = random.choice(range(1, GRID_X))
-			y = random.choice(range(1, GRID_Y))
-			z = random.choice([N, E, S, W])
-			if (x, y) not in selected:
-				selected.append((x, y))
-				check = pair(x, y) + pair(*z)*3
-				if not 0 < check.x <= 17 or not 0 < check.y <= 17:
-					# this obstacle is illegal
-					continue
-
-				else:
-					clear = True
-					for a, b, c in obstacles:
-
-						for i in range(0, 5):
-							# no new obstacle within 5 units of an obstacle's image facing direction
-							check = pair(a, b) + pair(*c)*i
-							if abs(check.x - x) <= 1 and abs(check.y - y) <= 1:
-								clear = False
-								break
-
-						if (clear == False):
-							break
-
-						# check that no obstacles within this new obstacle line of sight also
-						for i in range(0, 5):
-							# no new obstacle within 5 units of an obstacle's image facing direction
-							check = pair(x, y) + pair(*z)*i
-							if abs(check.x - a) <= 1 and abs(check.y - b) <= 1:
-								clear = False
-								break
-
-						if (clear == False):
-							break
-
-					if clear:
-						obstacles.append((x, y, z))
-						new = True
-	print(obstacles)
-	return obstacles
- """
-
-
-def random_obstacles(n):
-
-    directions = [N, E, S, W]
-    obstacles = list()
-    illegal = list()
-
-    # Start box + 3 above startbox is illegal for obstacles
-    for i in range(1, 5):
-        for j in range(1, 8):
-            for d in directions:
-                illegal.append((i, j, d))
-
-    for i in range(0, n):
-
-        new = False
-
-        while not new:
-            x = random.choice(range(1, 20))
-            y = random.choice(range(1, 20))
-            z = random.choice(directions)
-
-            # Skip if position already occupied or is already deemed illegal
-            if any((x, y) == (o[0], o[1]) for o in obstacles) or (x, y, z) in illegal:
-                print("Illegal -", (x, y, z))
-                continue
-
-            # Add x,y,z combination to ilegal list
-            illegal.append((x, y, z))
-            print("appended:", (x, y, z))
-
-            x_dir, y_dir = x + z[0] * 3, y + z[1] * 3
-
-            # Illegal 1 - If obstacle is <= 3 blocks from border and facing direction of border
-            if not 3 < x_dir <= 18 or not 3 <= y_dir <= 18:
-                print("Illegal -", (x, y, z), x_dir, y_dir,
-                      "obstacle is <= 3 blocks from border and facing direction of border")
-                continue
-
-            valid = True
-
-            # Illegal 2 - If obstacle <= 3 blocks from any other obstacle and facing direction of obstacle
-            for a, b, c in obstacles:
-                if abs(x_dir - a) <= 3 and abs(y_dir - b) <= 3:
-                    valid = False
-                    break
-
-            if valid:
-                obstacles.append((x, y, z))
-                new = True
-
-    print(obstacles)
-    return obstacles
-
-
 # TESTING #
 if __name__ == '__main__':
-    print("hi")
-    random_obstacles(10)
-    print("bye")
 
-    """ test1 = node(pair(1, 1), pair(0, 1))
-	test2 = node(pair(4, 4), pair(1, 0))
-	path1 = path([test1], 1)
-	path2 = path([test2], 6, ['right'])
+    test1 = node(pair(1, 1), pair(0, 1))
+    test2 = node(pair(4, 4), pair(1, 0))
+    path1 = path([test1], 1)
+    path2 = path([test2], 6, ['right'])
 
-	path3 = path1 + path2
+    path3 = path1 + path2
 
-	path3.print_path()
+    path3.print_path()
 
-	path3.reverse_path().print_path()
+    path3.reverse_path().print_path()
 
-	start = node(pair(5, 5), pair(1, 0))
+    start = node(pair(5, 5), pair(1, 0))
 
-	bot = robot(start, 4)
+    bot = robot(start, 4)
 
-	bot.move(bot.backleft())
+    bot.move(bot.backleft())
 
-	print(bot.pos.get())
+    print(bot.pos.get())
 
-	O1 = node(pair(6, 14), pair(-1, 0))
+    O1 = node(pair(6, 14), pair(-1, 0))
 
-	obstacle_list = [obstacle(O1)]
+    obstacle_list = [obstacle(O1)]
 
-	bot.turning_clearance(bot.backleft, obstacle_list) """
+    bot.turning_clearance(bot.backleft, obstacle_list)

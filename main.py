@@ -102,8 +102,8 @@ def main():
 
     # Clean up the connection
 
-    test = (generate_translated_instruction("n10102W,n15151W"))
-    print(test)
+    # test = (generate_translated_instruction("n10102W,n15151W"))
+    # print(test)
 
 
 if __name__ == "__main__":
