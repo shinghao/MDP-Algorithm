@@ -62,7 +62,7 @@ class Sim:
 
         # Initialise obstacle list
         # Add list of obstacles here if you want to manually insert obstacles for testing
-        manual_obs_list = [(4, 10, Constants.N), (14, 6, (Constants.W))]
+        manual_obs_list = []
         self.obstacle_list = add_obstacles_manually(manual_obs_list)
 
         # Initialise pathfinding object
