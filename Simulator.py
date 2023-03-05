@@ -8,9 +8,9 @@ import Grid
 import RobotPathRenderer
 import time
 from griddyworld import pair
-import griddyworld
 from PathGenerator import PathGenerator
 import mapping
+import obstacleRandomiser
 
 
 ''' Utility functions for pygame'''
@@ -181,7 +181,7 @@ class Sim:
     def generate_random_obstacles(self):
         self.reset()
         self.obstacle_list = add_obstacles_manually(
-            griddyworld.random_obstacles(Constants.NUM_OBS_GENERATED))
+            obstacleRandomiser.random_obstacles(Constants.NUM_OBS_GENERATED))
 
     def handle_instructions(self):
         count = 0
