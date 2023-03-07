@@ -26,10 +26,8 @@ def hpath_astar(bot, nodes):
 
 	return route
 
-def astar_TSP(bot, nodes, obstacles, alt = False):
-	# nodes should be a list of list: list of possible goal states for every obstacle
+def astar_TSP(bot, nodes, obstacles):
 
-	# alt allows you to execute upgraded astar -> allowing it to access alternate goal states
 	start = bot.pos
 
 	print("Connecting the graphs using A-star to weigh edges")
@@ -39,7 +37,6 @@ def astar_TSP(bot, nodes, obstacles, alt = False):
 	route = pathorder.permutate(graph)
 
 	obstacle_order = list()
-
 			
 	for r in route:
 		goal = r.last()
@@ -50,21 +47,6 @@ def astar_TSP(bot, nodes, obstacles, alt = False):
 			if o.pos.grid == o_coords:
 				obstacle_order.append(o)
 				break
-
-	if alt:
-		newroute = list()
-		
-		for r in route:
-			goal = r.last()
-
-			if not doppelganger(goal, obstacles):
-				newroute.append(astar(bot, goal, obstacles, alt))
-
-			else:
-				newroute.append(r)
-
-		return newroute, obstacle_order
-
 
 	return route, obstacle_order
 

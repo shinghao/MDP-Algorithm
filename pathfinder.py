@@ -1,12 +1,9 @@
 from griddyworld import *
-from heuristics import euc_dist, costing, alt_goal_states
+from heuristics import euc_dist, costing
 
 import heapq
 
-def astar(bot, goal, obstacle_list, alt = False):
-
-	if alt: goals = alt_goal_states(goal)
-	else: goals = [goal]
+def astar(bot, goal: node, obstacles):
 
 	print("Executing A-star algorithm for %s to %s" %(bot.pos.get(),goal.get()))
 
@@ -36,10 +33,10 @@ def astar(bot, goal, obstacle_list, alt = False):
 		for f in movements:
 
 			if f.__name__ in ['forward', 'back']:
-				if bot.check_obstacle(f().grid, obstacle_list): continue
+				if bot.check_obstacle(f().grid, obstacles): continue
 
 			elif f.__name__ in ['left', 'backleft', 'right', 'backright']:
-				if not bot.turning_clear(f, obstacle_list): continue # if not clear
+				if not bot.turning_clear(f, obstacles): continue # if not clear
 
 			else: 
 				print(f"{f.__name__} is not a valid movement")
@@ -56,9 +53,9 @@ def astar(bot, goal, obstacle_list, alt = False):
 				new_p.update_hcost(euc_dist(newnode.grid.get(), goal.grid.get()))
 				new_p.add_move(f)
 				new_p.add_cost(costing(f))
-				if new_p.last().get() in goals:
+				if new_p.last().get() == goal:
 					print("FOUND GOAL")
-					bot.move(new_p.last().get()) # move to goal state
+					bot.move(goal) # move to goal state
 					return new_p
 				else:
 					visited_directory[newnode.direction.get()][newnode.grid.y - 1][newnode.grid.x - 1] = new_p
