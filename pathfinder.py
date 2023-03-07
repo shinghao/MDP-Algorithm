@@ -1,18 +1,12 @@
 from griddyworld import *
-from heuristics import euc_dist
+from heuristics import euc_dist, costing, alt_goal_states
 
 import heapq
 
-def costing(f):
-	if f.__name__ == 'left' or f.__name__ == 'backleft':
-		return 6
+def astar(bot, goal, obstacle_list, alt = False):
 
-	elif f.__name__ == 'right' or f.__name__ == 'backright':
-		return 8
-
-	else: return 1
-
-def astar(bot, goal, obstacle_list):
+	if alt: goals = alt_goal_states(goal)
+	else: goals = [goal]
 
 	print("Executing A-star algorithm for %s to %s" %(bot.pos.get(),goal.get()))
 
@@ -62,9 +56,9 @@ def astar(bot, goal, obstacle_list):
 				new_p.update_hcost(euc_dist(newnode.grid.get(), goal.grid.get()))
 				new_p.add_move(f)
 				new_p.add_cost(costing(f))
-				if new_p.last().get() == goal.get():
+				if new_p.last().get() in goals:
 					print("FOUND GOAL")
-					bot.move(goal)
+					bot.move(new_p.last().get()) # move to goal state
 					return new_p
 				else:
 					visited_directory[newnode.direction.get()][newnode.grid.y - 1][newnode.grid.x - 1] = new_p

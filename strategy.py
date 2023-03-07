@@ -2,6 +2,8 @@ from griddyworld import *
 
 from pathfinder import naive, astar
 
+from heuristic import doppelganger
+
 import pathorder
 
 def hpath_astar(bot, nodes):
@@ -24,8 +26,10 @@ def hpath_astar(bot, nodes):
 
 	return route
 
-def astar_TSP(bot, nodes, obstacles):
+def astar_TSP(bot, nodes, obstacles, alt = False):
+	# nodes should be a list of list: list of possible goal states for every obstacle
 
+	# alt allows you to execute upgraded astar -> allowing it to access alternate goal states
 	start = bot.pos
 
 	print("Connecting the graphs using A-star to weigh edges")
@@ -46,6 +50,21 @@ def astar_TSP(bot, nodes, obstacles):
 			if o.pos.grid == o_coords:
 				obstacle_order.append(o)
 				break
+
+	if alt:
+		newroute = list()
+		
+		for r in route:
+			goal = r.last()
+
+			if not doppelganger(goal, obstacles):
+				newroute.append(astar(bot, goal, obstacles, alt))
+
+			else:
+				newroute.append(r)
+
+		return newroute, obstacle_order
+
 
 	return route, obstacle_order
 
@@ -74,7 +93,7 @@ if __name__ == '__main__':
 
 	# # # #
 	
-	nodes = [o.relative_ori() for o in obstacles]
+	nodes = [o.goal_state() for o in obstacles]
 
 	bot = robot(start, 3)
 

@@ -56,6 +56,9 @@ class node:
     def get(self):
         return (self.grid.x, self.grid.y), (self.direction.x, self.direction.y)
 
+    def __eq__(self, other):
+    	return self.grid == other.grid and self.direction == other.direction
+
 
 class path:
 
@@ -151,7 +154,7 @@ class obstacle:
         else:
             return False
 
-    def relative_ori(self, dist=3):
+    def goal_state(self, dist=3):
         ''' get the relative orientation the robot needs to be in
         to scan the image on the obstacle'''
         # how to handle outofbounds?
@@ -179,7 +182,6 @@ class obstacle:
         else:
             raise Exception(
                 "Obstacle orientation error - only N,S,E,W are allowed.")
-
 
 class robot:
 
