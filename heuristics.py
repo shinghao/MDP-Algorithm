@@ -67,12 +67,12 @@ def alt_goal_states(goal: node):
 	
 	return goals
 
-# TESTING #
+if __name__ == '__main__':
+	# TESTING #
+	test = node(pair(17,4), pair(*W))
 
-test = node(pair(17,4), pair(*W))
-
-for g in alt_goal_states(test):
-	print(g.get())
+	for g in alt_goal_states(test):
+		print(g.get())
 
 
 

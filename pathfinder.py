@@ -3,6 +3,9 @@ from heuristics import euc_dist, costing
 
 import heapq
 
+class revisitError(Exception):
+	pass
+
 def astar(bot, goal: node, obstacles):
 
 	print("Executing A-star algorithm for %s to %s" %(bot.pos.get(),goal.get()))
@@ -20,6 +23,13 @@ def astar(bot, goal: node, obstacles):
 
 	p = path()
 	p.add(start)
+
+	try: 
+		if bot.pos == goal: raise revisitError("You are already at this location.")
+
+	except revisitError:
+		return p
+
 	hcost = euc_dist(start.grid.get(), goal.grid.get())
 	p.update_hcost(hcost) # heuristic
 
