@@ -1,7 +1,7 @@
 from typing import List
 from Constants import N, E, S, W, GRID_NUM
 
-START = (2,2)
+START = (2, 2)
 
 O1 = (4, 4)
 
@@ -15,8 +15,8 @@ GRID_X, GRID_Y = GRID_NUM, GRID_NUM
 
 F_LEFT = (-4, 2)
 B_LEFT = (-2, -4)
-F_RIGHT = (5, 3)
-B_RIGHT = (3, -5)
+F_RIGHT = (4, 2)
+B_RIGHT = (2, -4)
 
 
 class pair:
@@ -44,7 +44,7 @@ class pair:
         return self.x, self.y
 
     def flip(self):
-    	return pair(self.y, self.x)
+        return pair(self.y, self.x)
 
 
 class node:
@@ -57,7 +57,7 @@ class node:
         return (self.grid.x, self.grid.y), (self.direction.x, self.direction.y)
 
     def __eq__(self, other):
-    	return self.grid == other.grid and self.direction == other.direction
+        return self.grid == other.grid and self.direction == other.direction
 
 
 class path:
@@ -183,27 +183,28 @@ class obstacle:
             raise Exception(
                 "Obstacle orientation error - only N,S,E,W are allowed.")
 
+
 class robot:
 
-    def __init__(self, pos:node = None, F_LEFT:pair = None, F_RIGHT:pair = None, B_LEFT:pair = None, B_RIGHT:pair = None, turning=3):
+    def __init__(self, pos: node = None, F_LEFT: pair = None, F_RIGHT: pair = None, B_LEFT: pair = None, B_RIGHT: pair = None, turning=3):
         self.pos = pos
 
         # ideal case is same turning radius, use this to adjust all turning aspects
         if F_LEFT and F_RIGHT and B_LEFT and B_RIGHT:
-        	self.F_LEFT = F_LEFT
-	        self.F_RIGHT = F_RIGHT
-	        self.B_LEFT = B_LEFT
-	        self.B_RIGHT = B_RIGHT
+            self.F_LEFT = F_LEFT
+            self.F_RIGHT = F_RIGHT
+            self.B_LEFT = B_LEFT
+            self.B_RIGHT = B_RIGHT
         else:
-	        self.F_LEFT = pair(-turning, turning)
-	        self.F_RIGHT = pair(turning, turning)
-	        self.B_LEFT = pair(-turning, -turning)
-	        self.B_RIGHT = pair(turning, -turning)
+            self.F_LEFT = pair(-turning, turning)
+            self.F_RIGHT = pair(turning, turning)
+            self.B_LEFT = pair(-turning, -turning)
+            self.B_RIGHT = pair(turning, -turning)
 
     def move(self, new_pos):
         self.pos = new_pos
 
-    def config_turning(self, F_LEFT : pair, F_RIGHT: pair, B_LEFT: pair, B_RIGHT: pair):
+    def config_turning(self, F_LEFT: pair, F_RIGHT: pair, B_LEFT: pair, B_RIGHT: pair):
         self.F_LEFT = F_LEFT
         self.F_RIGHT = F_RIGHT
         self.B_LEFT = B_LEFT
@@ -211,7 +212,7 @@ class robot:
 
     def perspective(self, turn):
         ''' translates turning vector into one that matches the current perspective of the robot
-			e.g. turning left while facing north vs turning left while facing south from the same                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   grid will yield different destinations
+                        e.g. turning left while facing north vs turning left while facing south from the same                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   grid will yield different destinations
         '''
 
         if self.pos.direction.get() == N:
@@ -313,61 +314,76 @@ class robot:
         return False
 
     def turning_clear(self, movement, obstacles):
-    	dest = movement()
-    	if movement.__name__ == 'left':
-    		turn, ori  = self.perspective('left')
-    	elif movement.__name__ == 'right':
-    		turn, ori  = self.perspective('right')
-    	elif movement.__name__ == 'backleft':
-    		turn, ori  = self.perspective('backleft')
-    	elif movement.__name__ == 'backright':
-    		turn, ori  = self.perspective('backright')
-    	else: raise Exception("illegal move found while checking turn: %s" % movement.__name__)
+        dest = movement()
+        if movement.__name__ == 'left':
+            turn, ori = self.perspective('left')
+        elif movement.__name__ == 'right':
+            turn, ori = self.perspective('right')
+        elif movement.__name__ == 'backleft':
+            turn, ori = self.perspective('backleft')
+        elif movement.__name__ == 'backright':
+            turn, ori = self.perspective('backright')
+        else:
+            raise Exception(
+                "illegal move found while checking turn: %s" % movement.__name__)
 
-    	# print(turn.get(), ori)
+        # print(turn.get(), ori)
 
-    	# IF ORIENTATION IS N,S : CHECK ALONG Y AXIS THEN X; ELSE CHECK X THEN Y
+        # IF ORIENTATION IS N,S : CHECK ALONG Y AXIS THEN X; ELSE CHECK X THEN Y
 
-    	if self.pos.direction.get() in [N,S]:
-    		vertical,horizontal = turn.y, turn.x
-    		if vertical >= 0: offset1 = pair(0,1)
-    		else: offset1 = pair(0, -1)
-    		if horizontal >= 0: offset2 = pair(1,0)
-    		else: offset2 = pair(-1, 0)
+        if self.pos.direction.get() in [N, S]:
+            vertical, horizontal = turn.y, turn.x
+            if vertical >= 0:
+                offset1 = pair(0, 1)
+            else:
+                offset1 = pair(0, -1)
+            if horizontal >= 0:
+                offset2 = pair(1, 0)
+            else:
+                offset2 = pair(-1, 0)
 
-    	elif self.pos.direction.get() in [E,W]:
-    		vertical, horizontal = turn.x, turn.y
-    		if vertical >= 0: offset1 = pair(1,0)
-    		else: offset1 = pair(-1, 0)
-    		if horizontal >= 0: offset2 = pair(0,1)
-    		else: offset2 = pair(0, -1)
+        elif self.pos.direction.get() in [E, W]:
+            vertical, horizontal = turn.x, turn.y
+            if vertical >= 0:
+                offset1 = pair(1, 0)
+            else:
+                offset1 = pair(-1, 0)
+            if horizontal >= 0:
+                offset2 = pair(0, 1)
+            else:
+                offset2 = pair(0, -1)
 
-    	else: raise Exception("robot found in illegal orientation: %s" % self.pos.direction)
+        else:
+            raise Exception(
+                "robot found in illegal orientation: %s" % self.pos.direction)
 
-    	# print(vertical, horizontal, offset1.get(), offset2.get())
+        # print(vertical, horizontal, offset1.get(), offset2.get())
 
-    	# DO OBSTACLE 3X3 CHECK FOR EVERY GRID TRAVELED HORIZONTALLY AND VERTICALLY (DOESN'T ACCOUNT FOR DIAGONAL)
+        # DO OBSTACLE 3X3 CHECK FOR EVERY GRID TRAVELED HORIZONTALLY AND VERTICALLY (DOESN'T ACCOUNT FOR DIAGONAL)
 
-    	current = self.pos.grid # remember location to simulate movement
+        current = self.pos.grid  # remember location to simulate movement
 
-    	for i in range(1, abs(vertical)+1):
-    		current += offset1
-    		# print(f"Checking {current.get()} for obstacles")
-    		if self.check_obstacle(current, obstacles): return False # turning cannot be done
-    		#print("Clear.")
+        for i in range(1, abs(vertical)+1):
+            current += offset1
+            # print(f"Checking {current.get()} for obstacles")
+            if self.check_obstacle(current, obstacles):
+                return False  # turning cannot be done
+            # print("Clear.")
 
-    	# CHECK THE OFF-ANGLE DURING THE TURN:
-    	# print(f"Checking {(current-offset1+offset2).get()} for obstacles")
-    	if self.check_obstacle(current-offset1+offset2, obstacles): return False # turning cannot be done
-    	# print("Clear.")
+        # CHECK THE OFF-ANGLE DURING THE TURN:
+        # print(f"Checking {(current-offset1+offset2).get()} for obstacles")
+        if self.check_obstacle(current-offset1+offset2, obstacles):
+            return False  # turning cannot be done
+        # print("Clear.")
 
-    	for j in range(1, abs(horizontal)+1):
-    		current += offset2
-    		# print(f"Checking {current.get()} for obstacles")
-    		if self.check_obstacle(current, obstacles): return False # turning cannot be done
-    		# print("Clear.")
+        for j in range(1, abs(horizontal)+1):
+            current += offset2
+            # print(f"Checking {current.get()} for obstacles")
+            if self.check_obstacle(current, obstacles):
+                return False  # turning cannot be done
+            # print("Clear.")
 
-    	return True # above checks pass, turning can be made
+        return True  # above checks pass, turning can be made
 
     ### THIS IS ONLY USABLE IF TURNING IS SYMMETRIC (I.E. SAME X AND Y TRAVELED ON TURNS) ###
     # def turning_clearance(self, movement, obstacle_list, mult=2):
@@ -457,15 +473,16 @@ if __name__ == '__main__':
 
     # path3.reverse_path().print_path()
 
-    start = node(pair(5, 5), pair(1,0))
+    start = node(pair(5, 5), pair(1, 0))
 
-    bot = robot(start, F_LEFT = pair(*F_LEFT), F_RIGHT = pair(*F_RIGHT), B_LEFT = pair(*B_LEFT), B_RIGHT = pair(*B_RIGHT))
+    bot = robot(start, F_LEFT=pair(*F_LEFT), F_RIGHT=pair(*F_RIGHT),
+                B_LEFT=pair(*B_LEFT), B_RIGHT=pair(*B_RIGHT))
 
-    #bot.move(bot.backleft())
+    # bot.move(bot.backleft())
 
     print(bot.pos.get())
 
-    O1 = node(pair(8,7), pair(-1, 0))
+    O1 = node(pair(8, 7), pair(-1, 0))
 
     obstacle_list = [obstacle(1, O1)]
 
@@ -473,4 +490,4 @@ if __name__ == '__main__':
 
     print(bot.turning_clear(bot.backright, obstacle_list))
 
-    #bot.turning_clearance(bot.backleft, obstacle_list)
+    # bot.turning_clearance(bot.backleft, obstacle_list)
