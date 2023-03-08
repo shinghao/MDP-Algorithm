@@ -41,7 +41,7 @@ class PathGenerator:
                     B_LEFT=pair(*B_LEFT), B_RIGHT=pair(*B_RIGHT))
 
         # Get target positions
-        target_pos_list = [o.relative_ori() for o in obstacles_griddyworld]
+        target_pos_list = [o.goal_state() for o in obstacles_griddyworld]
 
         self.instruction_list, self.obstacle_orderd = astar_TSP(
             bot, target_pos_list, obstacles_griddyworld)
