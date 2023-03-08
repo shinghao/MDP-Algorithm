@@ -98,6 +98,7 @@ def permutate(graph):
 				minpath = route
 
 			#print(pathcost)
+			
 		except:
 			print("index is %s and goto is %s" % (index, goto))
 			raise Exception("NO SOLUTION FOR THIS CONFIGURATION.")

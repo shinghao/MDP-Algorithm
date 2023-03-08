@@ -2,6 +2,8 @@ from griddyworld import *
 
 from pathfinder import naive, astar
 
+from heuristics import doppelganger
+
 import pathorder
 
 def hpath_astar(bot, nodes):
@@ -28,14 +30,15 @@ def astar_TSP(bot, nodes, obstacles):
 
 	start = bot.pos
 
-	print("Connecting the graphs using A-star to weigh edges")
+	print("[1] Connecting the graphs using A-star to weigh edges")
 
 	graph = pathorder.connect_graph(bot, nodes, start, obstacles)
+
+	print("[2] Permutating paths to find the optimal traversing order")
 
 	route = pathorder.permutate(graph)
 
 	obstacle_order = list()
-
 			
 	for r in route:
 		goal = r.last()
@@ -74,7 +77,7 @@ if __name__ == '__main__':
 
 	# # # #
 	
-	nodes = [o.relative_ori() for o in obstacles]
+	nodes = [o.goal_state() for o in obstacles]
 
 	bot = robot(start, 3)
 

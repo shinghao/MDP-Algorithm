@@ -1,18 +1,12 @@
 from griddyworld import *
-from heuristics import euc_dist
+from heuristics import euc_dist, costing
 
 import heapq
 
-def costing(f):
-	if f.__name__ == 'left' or f.__name__ == 'backleft':
-		return 6
+class revisitError(Exception):
+	pass
 
-	elif f.__name__ == 'right' or f.__name__ == 'backright':
-		return 8
-
-	else: return 1
-
-def astar(bot, goal, obstacle_list):
+def astar(bot, goal: node, obstacles):
 
 	print("Executing A-star algorithm for %s to %s" %(bot.pos.get(),goal.get()))
 
@@ -29,6 +23,13 @@ def astar(bot, goal, obstacle_list):
 
 	p = path()
 	p.add(start)
+
+	try: 
+		if bot.pos == goal: raise revisitError("You are already at this location.")
+
+	except revisitError:
+		return p
+
 	hcost = euc_dist(start.grid.get(), goal.grid.get())
 	p.update_hcost(hcost) # heuristic
 
@@ -42,10 +43,10 @@ def astar(bot, goal, obstacle_list):
 		for f in movements:
 
 			if f.__name__ in ['forward', 'back']:
-				if bot.check_obstacle(f().grid, obstacle_list): continue
+				if bot.check_obstacle(f().grid, obstacles): continue
 
 			elif f.__name__ in ['left', 'backleft', 'right', 'backright']:
-				if not bot.turning_clear(f, obstacle_list): continue # if not clear
+				if not bot.turning_clear(f, obstacles): continue # if not clear
 
 			else: 
 				print(f"{f.__name__} is not a valid movement")
@@ -62,9 +63,9 @@ def astar(bot, goal, obstacle_list):
 				new_p.update_hcost(euc_dist(newnode.grid.get(), goal.grid.get()))
 				new_p.add_move(f)
 				new_p.add_cost(costing(f))
-				if new_p.last().get() == goal.get():
+				if new_p.last().get() == goal:
 					print("FOUND GOAL")
-					bot.move(goal)
+					bot.move(goal) # move to goal state
 					return new_p
 				else:
 					visited_directory[newnode.direction.get()][newnode.grid.y - 1][newnode.grid.x - 1] = new_p
