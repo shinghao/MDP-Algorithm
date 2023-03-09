@@ -46,4 +46,12 @@ class PathGenerator:
         self.instruction_list, self.obstacle_orderd = astar_TSP(
             bot, target_pos_list, obstacles_griddyworld)
 
+        print("HIHIHIHIH")
+        totcost = 0
+        for i in self.instruction_list:
+            print(i.last().get(), i.cost)
+            totcost += (i.cost)
+
+        print(totcost)
+
         print("Finish pathfinding algo!")
