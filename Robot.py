@@ -13,7 +13,7 @@ The Robot class handles the movement and rendering of the robot
 
 ONE_CELL = 10 * Constants.UNIT
 TURN_LEFT_X, TURN_LEFT_Y = 40 * Constants.UNIT, 20 * Constants.UNIT
-TURN_RIGHT_X, TURN_RIGHT_Y = 50 * Constants.UNIT, 30 * Constants.UNIT
+TURN_RIGHT_X, TURN_RIGHT_Y = 40 * Constants.UNIT, 20 * Constants.UNIT
 
 
 class Robot:

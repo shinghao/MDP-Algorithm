@@ -14,6 +14,14 @@ def check_round_obstacle():
     return instruction_list[:-1]
 
 
+def remove_duplicated_obstacles(obstacle_list):
+    '''
+    Function to remove any duplicated obstacles from a list of obstacle tuples
+    if duplicates are sent from the RPI
+    '''
+    return list(set(obstacle_list))
+
+
 def generate_translated_instruction(obstacle_str):
     '''
     Input: obstacle_str (str) message from RPI
@@ -28,6 +36,8 @@ def generate_translated_instruction(obstacle_str):
     '''
     # Translate obstacle_string from RPI message format to list of tuples
     obstacle_list = mapping.translate_obstacles_from_RPI(obstacle_str)
+    # Remove duplicates in case duplicated obstacles sent over from RPI
+    obstacle_list = remove_duplicated_obstacles(obstacle_list)
 
     # Create PathGenerator object and generate entire algo path
     path_generator = PathGenerator()
@@ -99,7 +109,7 @@ def main():
 
     # Clean up the connection
 
-    # test = (generate_translated_instruction("n03161S"))
+    # test = (generate_translated_instruction("n03161S,n03161S"))
     # print(test)
 
 
