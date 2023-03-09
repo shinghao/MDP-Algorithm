@@ -30,18 +30,18 @@ def astar(bot, goal: node, obstacles, strictness = True):
                          S: S_visited, E: E_visited, W: W_visited}
 
     movements = bot.controls()
+
+    #order movements in order of cost
+    costed_movements = [(costing(f), f) for f in movements]
+
+    #sorts and try the movements in order of cost
+    ordered_movements = sorted(costed_movements, key=lambda tup: tup[0])
+
     start = bot.pos
     explore = list()
 
     p = path()
     p.add(start)
-
-    try:
-        if bot.pos == goal:
-            raise revisitError("You are already at this location.")
-
-    except revisitError:
-        return p
 
     hcost = euc_dist(start.grid.get(), goal.grid.get())
     p.update_hcost(hcost)  # heuristic
@@ -53,7 +53,11 @@ def astar(bot, goal: node, obstacles, strictness = True):
         p = heapq.heappop(explore)
         bot.move(p.last())
 
-        for f in movements:
+        if p.last() == goal: 
+            print("FOUND GOAL")
+            return p
+
+        for cost, f in ordered_movements:
 
             if f.__name__ in ['forward', 'back']:
                 if bot.check_obstacle(f().grid, obstacles):
@@ -85,14 +89,9 @@ def astar(bot, goal: node, obstacles, strictness = True):
                     euc_dist(newnode.grid.get(), goal.grid.get()))
                 new_p.add_move(f)
                 new_p.add_cost(costing(f))
-                if new_p.last() == goal:
-                    print("FOUND GOAL")
-                    bot.move(goal)  # move to goal state
-                    return new_p
-                else:
-                    visited_directory[newnode.direction.get(
-                    )][newnode.grid.y - 1][newnode.grid.x - 1] = new_p
-                    heapq.heappush(explore, new_p)
+
+                visited_directory[newnode.direction.get()][newnode.grid.y - 1][newnode.grid.x - 1] = new_p
+                heapq.heappush(explore, new_p)
 
             else:
                 continue
