@@ -45,6 +45,11 @@ def astar(bot, goal: node, obstacles):
     explore.append(p)  # 1 element so don't need to heapify
     # bot.move(start)
 
+    ### This logic checks if the goal state requires a less strict OOB check - otherwise always ensure tight OOB for integrity
+    if goal.grid.x in (1, GRID_X) or goal.grid.y in (1, GRID_Y): strictness = False
+    else: strictness = True
+
+
     while explore:
         p = heapq.heappop(explore)
         bot.move(p.last())
@@ -65,8 +70,11 @@ def astar(bot, goal: node, obstacles):
 
             newnode = f()
 
+            # if strictness is true, do tight check, if not - do loose check
+            oob_check = (strictness and bot.tight_oob(newnode.grid)) or (not strictness and bot.oob(newnode.grid))
+
             # grid to visit is not out of bounds nor it has been visited (includes orientation)
-            if not bot.oob(newnode.grid) and \
+            if not (oob_check) and \
                     not visited_directory[newnode.direction.get()][newnode.grid.y - 1][newnode.grid.x - 1]:
                 # print(p.get(), f.__name__)
                 new_p = path() + p  # copy old path

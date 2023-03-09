@@ -27,7 +27,7 @@ def map_control(instr, rep):
 
     elif instr == 'right':
         # return "ne0%s,nw00%s" % (UNIT_T_R, CALIBRATION)
-        return "ne043,nx015,ne043,nw003"  # hardcoded
+        return "ne043 nx015 ne043 nw003"  # hardcoded
 
     elif instr == 'backleft':
         return "nx00%s,nz0%s" % (CALIBRATION, UNIT_T_L)
