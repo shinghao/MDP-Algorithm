@@ -35,18 +35,18 @@ def generate_translated_instruction(obstacle_str):
     Return: instruction_str (str) message for RPI
     '''
     # Translate obstacle_string from RPI message format to list of tuples
-    obstacle_list = mapping.translate_obstacles_from_RPI(obstacle_str)
+    obstacle_list_rpi = mapping.translate_obstacles_from_RPI(obstacle_str)
     # Remove duplicates in case duplicated obstacles sent over from RPI
-    obstacle_list = remove_duplicated_obstacles(obstacle_list)
+    obstacle_list_rpi = remove_duplicated_obstacles(obstacle_list_rpi)
 
     # Create PathGenerator object and generate entire algo path
     path_generator = PathGenerator()
-    path_generator.generate_path(obstacle_list, is_sim=False)
+    path_generator.generate_path(obstacle_list_rpi, is_sim=False)
 
     # Get list of obstacles in order of visitation
     obstacles_ordered = path_generator.get_obstacles_ordered()
     obstacles_ordered_translated = mapping.translate_obstacles_to_RPI(
-        obstacles_ordered)
+        obstacles_ordered, obstacle_list_rpi)
 
     # Get list of instructions from PathGenerator
     instr_list = path_generator.get_instruction_list()
@@ -109,7 +109,7 @@ def main():
 
     # Clean up the connection
 
-    # test = (generate_translated_instruction("n03161S,n03161S"))
+    # test = (generate_translated_instruction("n03161S,n20203N"))
     # print(test)
 
 
