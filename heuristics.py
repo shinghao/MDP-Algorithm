@@ -12,13 +12,11 @@ def euc_dist(a:tuple,b:tuple):
 	return straight_line_dist
 
 def costing(f):
-	if f.__name__ == 'left' or f.__name__ == 'backleft':
-		return 6
 
-	elif f.__name__ == 'right' or f.__name__ == 'backright':
-		return 8
-
-	else: return 1
+	if f.__name__ == 'forward' or f.__name__ == 'back':
+		return 1
+		
+	else: return 6
 
 def doppelganger(goal: node, obstacles: List[obstacle], allowance = 2):
 	''' This function checks if an obstacle has a nearby obstacle with the same orientation (returns True)

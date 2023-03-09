@@ -57,11 +57,13 @@ def astar_TSP(bot, nodes, obstacles):
 
 if __name__ == '__main__':
 
+	from obstacleRandomiser import random_obstacles
+
 	start = node(pair(2,2), pair(0,1))
 
 	test = node(pair(9,8), pair(0,1))
 
-	obstacles = random_obstacles(3)
+	obstacles = random_obstacles(6)
 
 	print(obstacles)
 

@@ -52,7 +52,7 @@ def greedy(nodes: List[node], start: tuple):
 # usage: pathfound = astar(bot,goal)
 
 def connect_graph(bot, visit: List[node], start: node, obstacles: List[obstacle]):
-	''' nodes should be the positional nodes that the robot needs to visit in the graph '''
+	''' "visit" should be the positional nodes that the robot needs to visit in the graph '''
 	# adjacency matrix
 
 	nodes = [start] + visit
