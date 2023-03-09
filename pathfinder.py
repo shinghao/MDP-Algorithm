@@ -96,6 +96,7 @@ def astar(bot, goal: node, obstacles):
                 continue
 
     print("A-STAR COULDN'T FIND PATH")
+    return None # returns Nothing because no path
 
 
 def naive(bot, goal):

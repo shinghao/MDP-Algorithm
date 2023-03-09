@@ -83,15 +83,25 @@ def permutate(graph):
 	mincost = INF
 	minpath = None
 
+	illegal = list() # new check to see if any goal states cannot be visited by algo (no solution)
+
 	for permutation in permutations:
 		index = 0 # always start from zero
 		pathcost = 0
 		route = list()
 		try: 
 			for goto in permutation:
-				pathcost += graph[index][goto].cost
-				route.append(graph[index][goto])
-				index = goto
+				
+				if goto not in illegal and not graph[index][goto]: # no solution
+					illegal.append(goto)
+					print("ILLEGAL OBSTACLE DETECTED - IGNORING OBSTACLE %s" %goto)
+
+				if index not in illegal and goto not in illegal:
+					pathcost += graph[index][goto].cost
+					route.append(graph[index][goto])
+					index = goto
+
+				else: continue # do nothing, no path will be added to try and reach this illegal state
 
 			if pathcost < mincost:
 				mincost = pathcost
@@ -100,8 +110,8 @@ def permutate(graph):
 			#print(pathcost)
 			
 		except:
-			print("index is %s and goto is %s" % (index, goto))
-			raise Exception("NO SOLUTION FOR THIS CONFIGURATION.")
+			#print("index is %s and goto is %s" % (index, goto))
+			raise Exception("SOMETHING WENT WRONG, PLEASE CHECK YOUR CODE")
 
 	return minpath
 
