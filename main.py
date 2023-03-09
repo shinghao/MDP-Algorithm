@@ -107,10 +107,15 @@ def main():
     conn.close()
     sock.close()
 
-    # Clean up the connection
+    # # Clean up the connection
+    '''
+    test = (generate_translated_instruction(
+        "n16066W,n14015N,n13124N,n10093W,n03162S,n02071S"))
 
-    # test = (generate_translated_instruction("n03161S,n20203N"))
-    # print(test)
+    # n16066W,n14015N,n13124N,n10093W,n03162S,n02071S
+    # n16016W,n16025N,n13164S,n10073S,n03162S,n02071E
+    print(test)
+    '''
 
 
 if __name__ == "__main__":
