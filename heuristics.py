@@ -15,8 +15,14 @@ def costing(f):
 
 	if f.__name__ == 'forward' or f.__name__ == 'back':
 		return 1
-		
-	else: return 6
+
+	elif f.__name__ == 'right' or f.__name__ == 'backright':
+		return 8
+
+	elif f.__name__ == 'left' or f.__name__ == 'backleft':
+		return 6
+
+	else: raise Exception("INVALID MOVEMENT DETECTED FOR COST EVALUATION: %s" % f.__name__)
 
 def doppelganger(goal: node, obstacles: List[obstacle], allowance = 2):
 	''' This function checks if an obstacle has a nearby obstacle with the same orientation (returns True)

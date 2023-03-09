@@ -8,7 +8,11 @@ class revisitError(Exception):
     pass
 
 
-def astar(bot, goal: node, obstacles):
+def astar(bot, goal: node, obstacles, strictness = True):
+    ''' bot should already be in the correct starting position
+        node is the destination grid and orientation
+        obstacles refer to the list of obstacles to avoid and check for
+        strictness determines if bot can move close to the boundaries - True = avoid going near bounds'''
 
     print("Executing A-star algorithm for %s to %s" %
           (bot.pos.get(), goal.get()))
@@ -45,11 +49,6 @@ def astar(bot, goal: node, obstacles):
     explore.append(p)  # 1 element so don't need to heapify
     # bot.move(start)
 
-    ### This logic checks if the goal state requires a less strict OOB check - otherwise always ensure tight OOB for integrity
-    if goal.grid.x in (1, GRID_X) or goal.grid.y in (1, GRID_Y): strictness = False
-    else: strictness = True
-
-
     while explore:
         p = heapq.heappop(explore)
         bot.move(p.last())
@@ -71,7 +70,10 @@ def astar(bot, goal: node, obstacles):
             newnode = f()
 
             # if strictness is true, do tight check, if not - do loose check
-            oob_check = (strictness and bot.tight_oob(newnode.grid)) or (not strictness and bot.oob(newnode.grid))
+            if strictness:
+                oob_check = bot.tight_oob(newnode.grid)
+            else:
+                oob_check = bot.oob(newnode.grid)
 
             # grid to visit is not out of bounds nor it has been visited (includes orientation)
             if not (oob_check) and \

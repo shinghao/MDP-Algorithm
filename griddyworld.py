@@ -286,7 +286,7 @@ class robot:
 
     def tight_oob(self, grid):
         ''' strict out of bounds check '''
-        for i in [-1, 0, 1]:  # use this if  don't want robot to go near bounds
+        for i in [-1, 0, 1]:  # use this if don't want robot to go near bounds
             if not (0 < grid.x + i <= GRID_X):
                 return True
             elif not (0 < grid.y + i <= GRID_Y):

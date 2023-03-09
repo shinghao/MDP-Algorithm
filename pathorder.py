@@ -56,7 +56,14 @@ def connect_graph(bot, visit: List[node], start: node, obstacles: List[obstacle]
 	# adjacency matrix
 
 	nodes = [start] + visit
-	adjM = [[None for i in range(0, len(nodes))] for j in range(0, len(nodes))]	
+	adjM = [[None for i in range(0, len(nodes))] for j in range(0, len(nodes))]
+
+	# CHECK IF ANY OF THE NODES ARE ILLEGAL GOAL STATES - IF SO -> DO LOOSE OOB FOR ALL OBST
+	### This logic checks if the goal state requires a less strict OOB check - otherwise always ensure tight OOB for integrity
+	strictness = True
+
+	for goal in visit:
+		if goal.grid.x in (1, GRID_X) or goal.grid.y in (1, GRID_Y): strictness = False
 
 	# it's NO LONGER solving some problems twice (since we can take reverse of A-B to find B-A)
 	i = 0
@@ -65,8 +72,8 @@ def connect_graph(bot, visit: List[node], start: node, obstacles: List[obstacle]
 		for edge in range(0, len(visit)):
 			bot.move(nodes[i])
 			if not nodes[i] == nodes[j]: # DON'T NEED SOLUTION TO ITSELF
-				if adjM[j][i]: adjM[i][j] = adjM[j][i].reverse_path()
-				else: adjM[i][j] = astar(bot, nodes[j], obstacles)
+				if adjM[j][i]: adjM[i][j] = adjM[j][i].reverse_path() # mirror case along diagonal
+				else: adjM[i][j] = astar(bot, nodes[j], obstacles, strictness)
 
 			j+=1
 		i += 1
