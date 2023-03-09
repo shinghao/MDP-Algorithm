@@ -79,7 +79,7 @@ def translate_instructions_to_RPI(instr_list):
     return result[:-1]  # remove last comma
 
 
-# format - "nXXYYiN,nXXYYiN"
+# format - "nXXYYiN,nXXYYiN" -> Obstacles from RPI to obstacles object
 def translate_obstacles_from_RPI(obstacle_str: str):
     '''
     Translate obstacles from RPI string format to a list of (id, x, y, direction) tuples
@@ -107,8 +107,23 @@ def translate_obstacles_to_RPI(obstacle_obj_list: list, obstacle_list_initial: l
     directions = {'N': Constants.N, 'S': Constants.S,
                   'E': Constants.E, 'W': Constants.W}
 
-    result = ""
+    result_str = ""
+    result_str += str(len(obstacle_obj_list)) + ","
+
+    for i in range(len(obstacle_list_initial)):
+        obstacle_list_initial[i] = int(obstacle_list_initial[i][0])
+
+    result_list = []
 
     for obs in obstacle_obj_list:
-        result += obs.ID + ","
-    return result
+        result_list.append(int(obs.ID))
+
+    if (len(obstacle_obj_list) != len(obstacle_list_initial)):
+        for obsID in obstacle_list_initial:
+            if obsID not in result_list:
+                result_str += str(obsID) + ","
+
+    for obsID in result_list:
+        result_str += str(obsID) + ","
+
+    return result_str
