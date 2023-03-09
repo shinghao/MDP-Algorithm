@@ -66,7 +66,7 @@ def astar(bot, goal: node, obstacles):
             newnode = f()
 
             # grid to visit is not out of bounds nor it has been visited (includes orientation)
-            if not bot.tight_oob(newnode.grid) and \
+            if not bot.oob(newnode.grid) and \
                     not visited_directory[newnode.direction.get()][newnode.grid.y - 1][newnode.grid.x - 1]:
                 # print(p.get(), f.__name__)
                 new_p = path() + p  # copy old path
