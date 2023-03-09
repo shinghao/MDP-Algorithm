@@ -27,14 +27,14 @@ def map_control(instr, rep):
 
     elif instr == 'right':
         # return "ne0%s,nw00%s" % (UNIT_T_R, CALIBRATION)
-        return "ne043 nx015 ne043 nw003"  # hardcoded
+        return "ne043,nx015,ne043,nw003"  # hardcoded
 
     elif instr == 'backleft':
         return "nx00%s,nz0%s" % (CALIBRATION, UNIT_T_L)
 
     elif instr == 'backright':
         # return "nx00%s,nc0%s" % (CALIBRATION, UNIT_T_R)
-        return "nx003 nc043 nw015 nc043"  # hardcoded
+        return "nx003,nc043,nw015,nc043"  # hardcoded
 
     else:
         raise Exception(
@@ -100,13 +100,15 @@ def translate_obstacles_from_RPI(obstacle_str: str):
 
     return result
 
+# number_of_positions_sent, item_not_doing, item_not_doing, item_not_doing, original (order, and insturctions)
 
-def translate_obstacles_to_RPI(obstacle_list: list):
+
+def translate_obstacles_to_RPI(obstacle_obj_list: list, obstacle_list_initial: list):
     directions = {'N': Constants.N, 'S': Constants.S,
                   'E': Constants.E, 'W': Constants.W}
 
     result = ""
-    for obs in obstacle_list:
-        result += obs.ID + ","
 
+    for obs in obstacle_obj_list:
+        result += obs.ID + ","
     return result
