@@ -147,31 +147,27 @@ class Robot:
 
         # Determine target position & angle
         if initial_angle == Constants.NORTH:
-            target_pos = initial_pos + \
-                pair(-TURN_LEFT_X, -TURN_LEFT_Y)
+            target_pos = pair(-TURN_LEFT_X, -TURN_LEFT_Y)
             target_angle = Constants.WEST
 
         elif initial_angle == Constants.EAST:
-            target_pos = initial_pos + \
-                pair(TURN_LEFT_X, -TURN_LEFT_Y)
+            target_pos = pair(TURN_LEFT_Y, -TURN_LEFT_X)
             target_angle = Constants.NORTH
 
         elif initial_angle == Constants.SOUTH:
-            target_pos = initial_pos + \
-                pair(TURN_LEFT_X, TURN_LEFT_Y)
+            target_pos = pair(TURN_LEFT_X, TURN_LEFT_Y)
             target_angle = Constants.EAST
 
         elif initial_angle == Constants.WEST:
-            target_pos = initial_pos + \
-                pair(-TURN_LEFT_X, TURN_LEFT_Y)
+            target_pos = pair(-TURN_LEFT_Y, TURN_LEFT_X)
             target_angle = Constants.SOUTH
 
         self.set_is_moving(True)
-        while not self.is_movement_complete(target_pos):
+        while not self.is_movement_complete(target_pos + initial_pos):
             self.__move_a_step_oval(self.velocity, 1, -1,
-                                    TURN_LEFT_X, TURN_LEFT_Y)
+                                    abs(target_pos.get()[0]), abs(target_pos.get()[1]))
 
-        self.__adjust_robot(target_pos, target_angle)
+        self.__adjust_robot(target_pos + initial_pos, target_angle)
 
     def move_right_forward(self):
         """
@@ -182,33 +178,28 @@ class Robot:
 
         # Determine target position & angle
         if initial_angle == Constants.NORTH:
-            target_pos = initial_pos + \
-                pair(TURN_RIGHT_X, -TURN_RIGHT_Y)
+            target_pos = pair(TURN_RIGHT_X, -TURN_RIGHT_Y)
             target_angle = Constants.EAST
 
         elif initial_angle == Constants.EAST:
-            target_pos = initial_pos + \
-                pair(TURN_RIGHT_X, TURN_RIGHT_Y)
+            target_pos = pair(TURN_RIGHT_Y, TURN_RIGHT_X)
             target_angle = Constants.SOUTH
 
         elif initial_angle == Constants.SOUTH:
-            target_pos = initial_pos + \
-                pair(-TURN_RIGHT_X, TURN_RIGHT_Y)
+            target_pos = pair(-TURN_RIGHT_X, TURN_RIGHT_Y)
             target_angle = Constants.WEST
 
         elif initial_angle == Constants.WEST:
-            target_pos = initial_pos + \
-                pair(-TURN_RIGHT_X, -TURN_RIGHT_Y)
+            target_pos = pair(-TURN_RIGHT_Y, -TURN_RIGHT_X)
             target_angle = Constants.NORTH
 
         self.set_is_moving(True)
 
-        while not self.is_movement_complete(target_pos):
+        while not self.is_movement_complete(initial_pos + target_pos):
             self.__move_a_step_oval(-self.velocity, -1, 1,
-                                    TURN_RIGHT_X, TURN_RIGHT_Y)
+                                    abs(target_pos.get()[0]), abs(target_pos.get()[1]))
 
-        self.__adjust_robot(target_pos, target_angle)
-        # print(abs(self.get_pos().get()[0] - target_pos.get()[0]), abs(self.get_pos().get()[1] - target_pos.get()[1]))
+        self.__adjust_robot(target_pos + initial_pos, target_angle)
 
     def move_left_backward(self):
         """
@@ -219,31 +210,27 @@ class Robot:
 
         # Determine target position & angle
         if initial_angle == Constants.NORTH:
-            target_pos = initial_pos + \
-                pair(-TURN_LEFT_X, TURN_LEFT_Y)
+            target_pos = pair(-TURN_LEFT_X, TURN_LEFT_Y)
             target_angle = Constants.EAST
 
         elif initial_angle == Constants.EAST:
-            target_pos = initial_pos + \
-                pair(-TURN_LEFT_X, -TURN_LEFT_Y)
+            target_pos = pair(-TURN_LEFT_Y, -TURN_LEFT_X)
             target_angle = Constants.SOUTH
 
         elif initial_angle == Constants.SOUTH:
-            target_pos = initial_pos + \
-                pair(TURN_LEFT_X, -TURN_LEFT_Y)
+            target_pos = pair(TURN_LEFT_X, -TURN_LEFT_Y)
             target_angle = Constants.WEST
 
         elif initial_angle == Constants.WEST:
-            target_pos = initial_pos + \
-                pair(TURN_LEFT_X, TURN_LEFT_Y)
+            target_pos = pair(TURN_LEFT_Y, TURN_LEFT_X)
             target_angle = Constants.NORTH
 
         self.set_is_moving(True)
-        while not self.is_movement_complete(target_pos):
+        while not self.is_movement_complete(target_pos + initial_pos):
             self.__move_a_step_oval(
-                -self.velocity, 1, -1, TURN_LEFT_X, TURN_LEFT_Y)
+                -self.velocity, 1, -1, abs(target_pos.get()[0]), abs(target_pos.get()[1]))
 
-        self.__adjust_robot(target_pos, target_angle)
+        self.__adjust_robot(target_pos + initial_pos, target_angle)
 
     def move_right_backward(self):
         """
@@ -254,30 +241,26 @@ class Robot:
 
         # Determine target position & angle
         if initial_angle == Constants.NORTH:
-            target_pos = initial_pos + \
-                pair(TURN_RIGHT_X, TURN_RIGHT_Y)
+            target_pos = pair(TURN_RIGHT_X, TURN_RIGHT_Y)
             target_angle = Constants.WEST
 
         elif initial_angle == Constants.EAST:
-            target_pos = initial_pos + \
-                pair(-TURN_RIGHT_X, +TURN_RIGHT_Y)
+            target_pos = pair(-TURN_RIGHT_X, TURN_RIGHT_Y)
             target_angle = Constants.NORTH
 
         elif initial_angle == Constants.SOUTH:
-            target_pos = initial_pos + \
-                pair(-TURN_RIGHT_X, -TURN_RIGHT_Y)
+            target_pos = pair(-TURN_RIGHT_X, -TURN_RIGHT_Y)
             target_angle = Constants.EAST
 
         elif initial_angle == Constants.WEST:
-            target_pos = initial_pos + \
-                pair(TURN_RIGHT_X, -TURN_RIGHT_Y)
+            target_pos = pair(TURN_RIGHT_X, -TURN_RIGHT_Y)
             target_angle = Constants.SOUTH
 
         self.set_is_moving(True)
-        while not self.is_movement_complete(target_pos):
+        while not self.is_movement_complete(target_pos + initial_pos):
             self.__move_a_step_oval(self.velocity, -1,
-                                    1, TURN_RIGHT_X, TURN_RIGHT_Y)
-        self.__adjust_robot(target_pos, target_angle)
+                                    1, abs(target_pos.get()[0]), abs(target_pos.get()[1]))
+        self.__adjust_robot(target_pos + initial_pos, target_angle)
 
     def __move_a_step(self, velocity, angle_direction):
         # angle_direction determines if object is moving in negative or postive direction
@@ -289,7 +272,7 @@ class Robot:
 
     def __move_a_step_oval(self, velocity, x_dir, y_dir, radius_x, radius_y):
         # angle_direction determines if object is moving in negative or postive direction
-        theta = self.angle + (velocity / radius_x)
+        theta = self.angle + (velocity / (max(radius_x, radius_y)))
         x = radius_x * math.cos(theta)
         y = radius_y * math.sin(theta)
         dx = (x - radius_x * math.cos(self.angle)) * x_dir
