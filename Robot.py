@@ -210,19 +210,19 @@ class Robot:
 
         # Determine target position & angle
         if initial_angle == Constants.NORTH:
-            target_pos = pair(-TURN_LEFT_X, TURN_LEFT_Y)
+            target_pos = pair(-TURN_LEFT_Y, TURN_LEFT_X)
             target_angle = Constants.EAST
 
         elif initial_angle == Constants.EAST:
-            target_pos = pair(-TURN_LEFT_Y, -TURN_LEFT_X)
+            target_pos = pair(-TURN_LEFT_X, -TURN_LEFT_Y)
             target_angle = Constants.SOUTH
 
         elif initial_angle == Constants.SOUTH:
-            target_pos = pair(TURN_LEFT_X, -TURN_LEFT_Y)
+            target_pos = pair(TURN_LEFT_Y, -TURN_LEFT_X)
             target_angle = Constants.WEST
 
         elif initial_angle == Constants.WEST:
-            target_pos = pair(TURN_LEFT_Y, TURN_LEFT_X)
+            target_pos = pair(TURN_LEFT_X, TURN_LEFT_Y)
             target_angle = Constants.NORTH
 
         self.set_is_moving(True)
@@ -241,7 +241,7 @@ class Robot:
 
         # Determine target position & angle
         if initial_angle == Constants.NORTH:
-            target_pos = pair(TURN_RIGHT_X, TURN_RIGHT_Y)
+            target_pos = pair(TURN_RIGHT_Y, TURN_RIGHT_X)
             target_angle = Constants.WEST
 
         elif initial_angle == Constants.EAST:
@@ -249,7 +249,7 @@ class Robot:
             target_angle = Constants.NORTH
 
         elif initial_angle == Constants.SOUTH:
-            target_pos = pair(-TURN_RIGHT_X, -TURN_RIGHT_Y)
+            target_pos = pair(-TURN_RIGHT_Y, -TURN_RIGHT_X)
             target_angle = Constants.EAST
 
         elif initial_angle == Constants.WEST:
